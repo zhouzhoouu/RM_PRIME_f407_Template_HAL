@@ -18,13 +18,17 @@
 #include "gpio.h"
 
 
+#define MAX_CAN_DEVICES 30
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 void app_init_function(void);
 
-
+void TestTask(void const * argument);
+void DebugTask(void const * argument);
 
 
 
