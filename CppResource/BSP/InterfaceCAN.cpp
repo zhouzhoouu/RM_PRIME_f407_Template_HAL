@@ -1,7 +1,7 @@
 #include "InterfaceCAN.h"
 
 
-static Device::InterfaceCAN *CANDeviceList[MAX_CAN_DEVICES];
+static BSP::InterfaceCAN *CANDeviceList[MAX_CAN_DEVICES];
 static uint8_t CANDeviceCount;
 
 static void CAN_config_init(){
@@ -29,7 +29,7 @@ static void CAN_config_init(){
     HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);
 }
 
-namespace Device{
+namespace BSP{
 
     //该函数在main函数初始化HAL库后开始时被调用，用于初始化具体的CAN设备
     void CAN_UserInit(){

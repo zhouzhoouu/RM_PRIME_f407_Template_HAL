@@ -3,6 +3,7 @@
 #include "DM4310.h"
 #include "DeltaPID.h"
 #include "Debug.h"
+#include "RGB_LED.h"
 
 Device::DJiMotorGroup m3508Group_Chassis(&hcan1, 0x201, 0x200);
 Device::DJiMotorGroup m3508Group_frib(&hcan2, 0x204, 0x1ff);
@@ -13,40 +14,20 @@ Device::DM4310 PithMotor(&hcan2, 1);
 Component::DeltaPID M3508_Speed_PID(9.0f, 0.2f, 30.0f, 0.0f, 16384.0f, -16384.0f);
 
 
-
 void app_init_function(void) {
 
-    Device::CAN_UserInit();
+    BSP::CAN_UserInit();
 
 }
-
-void aRGB_led_show(uint32_t aRGB)
-{
-    static uint8_t alpha;
-    static uint16_t red,green,blue;
-
-    alpha = (aRGB & 0xFF000000) >> 24;
-    red = ((aRGB & 0x00FF0000) >> 16) * alpha;
-    green = ((aRGB & 0x0000FF00) >> 8) * alpha;
-    blue = ((aRGB & 0x000000FF) >> 0) * alpha;
-
-            __HAL_TIM_SetCompare(&htim5, TIM_CHANNEL_1, blue);
-            __HAL_TIM_SetCompare(&htim5, TIM_CHANNEL_2, green);
-            __HAL_TIM_SetCompare(&htim5, TIM_CHANNEL_3, red);
-}
-
 
 
 void TestTask(void const * argument){
 
-
-    HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_1);
-    HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_2);
-    HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_3);
-
     uint32_t col = 0;
 
-    aRGB_led_show(0xFFFF00FF);
+    Device::RGB_LED &hLED = Device::RGB_LED::getInstance();
+
+    hLED.setColor(0xFFFF00FF);
 
 
     while (1){
@@ -59,9 +40,9 @@ void TestTask(void const * argument){
 
 
         if(col)
-            aRGB_led_show(0xFFFF00FF);
+            hLED.setColor(0xFFFF00FF);
         else
-            aRGB_led_show(0xFF000000);
+            hLED.setColor(0xFF000000);
         col = !col;
 
         osDelay(1);

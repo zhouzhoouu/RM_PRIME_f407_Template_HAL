@@ -3,7 +3,7 @@
 #include "main_cpp.h"
 
 
-namespace Device {
+namespace BSP {
 
     class InterfaceCAN {
     public:

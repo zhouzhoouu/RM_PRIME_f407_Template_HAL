@@ -5,7 +5,7 @@
 
 namespace Device{
 
-    class DM4310 : public InterfaceCAN{
+class DM4310 : public BSP::InterfaceCAN{
     public:
         DM4310(CAN_HandleTypeDef *hc, uint32_t motorid);
         void init() override;

@@ -17,7 +17,7 @@ namespace Device {
             uint16_t key_code;  // bit field
         };
 
-        DBus(UART_HandleTypeDef *huart);
+        DBus();
         void init();
         bool receiveMessage(uint8_t *pdata, uint32_t len);
         const RCState* getState() const;

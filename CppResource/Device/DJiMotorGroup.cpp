@@ -5,17 +5,17 @@ namespace Device{
     DJiMotorGroup::DJiMotorGroup(CAN_HandleTypeDef *hc, uint32_t RxId, uint32_t TxId):
     InterfaceCAN(hc,RxId,TxId){
 
-        activeGroup[0] = 0;
-        activeGroup[1] = 0;
-        activeGroup[2] = 0;
-        activeGroup[3] = 0;
+        for(int i = 0; i < 4; ++i){
 
-        for(int i = 0; i < 8; ++i){
-            MotorState m = ((MotorState*)motors)[i];
-            m.angle = 0;
-            m.speed = 0;
-            m.current = 0;
-            m.temp = 0;
+            activeGroup[i] = 0;
+            motors[0][i].angle = 0;
+            motors[0][i].speed = 0;
+            motors[0][i].current = 0;
+            motors[0][i].temp = 0;
+            motors[1][i].angle = 2;
+            motors[1][i].speed = 0;
+            motors[1][i].current = 0;
+            motors[1][i].temp = 0;
         }
 
     }

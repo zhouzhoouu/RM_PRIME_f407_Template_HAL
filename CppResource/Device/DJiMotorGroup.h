@@ -6,7 +6,7 @@
 namespace Device {
 
 
-    class DJiMotorGroup: public InterfaceCAN {
+    class DJiMotorGroup: public BSP::InterfaceCAN {
     public:
 
         struct MotorState {
