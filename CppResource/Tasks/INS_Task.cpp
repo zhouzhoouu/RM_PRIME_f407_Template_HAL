@@ -23,8 +23,8 @@ BMI088::Measurement tmp;
 static const float Filter_num[][4] = {{0.002329458745586203f, 0.f, 0.f, 0.f},{1.f, -1.929454039488895f, 0.93178349823448126f, 0.f}};
 Simple_IIR3 acc_filter[3] = {
         Simple_IIR3(Filter_num[0],Filter_num[1]),
-            Simple_IIR3(Filter_num[0],Filter_num[1]),
-            Simple_IIR3(Filter_num[0],Filter_num[1]),
+        Simple_IIR3(Filter_num[0],Filter_num[1]),
+        Simple_IIR3(Filter_num[0],Filter_num[1]),
 };
 
 void INS_Task(void const * argument){
@@ -34,8 +34,6 @@ void INS_Task(void const * argument){
     AHRS_init(INS_angle_quat, INS_accel, INS_mag);
     BMI088 &hIMU = BMI088::getInstance();
 
-
-
     while (1){
 
         tmp = hIMU.GetMeasurement();
@@ -43,7 +41,6 @@ void INS_Task(void const * argument){
         INS_accel[0] = acc_filter[0].processSample(tmp.acc[0]);
         INS_accel[1] = acc_filter[1].processSample(tmp.acc[1]);
         INS_accel[2] = acc_filter[2].processSample(tmp.acc[2]);
-
 
 
         AHRS_update(INS_angle_quat, 0.001f, tmp.gyro, INS_accel, INS_mag);

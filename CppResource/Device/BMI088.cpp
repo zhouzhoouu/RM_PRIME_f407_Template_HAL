@@ -16,11 +16,11 @@ namespace Device {
 
     static uint8_t Gyro_Register_ConfigurationData_ErrorStatus[6][3] = {
         {BMI088_GYRO_RANGE,             BMI088_GYRO_2000,BMI088::GYRO_RANGE_ERROR},/* Angular rate and resolution */
-    {BMI088_GYRO_BANDWIDTH,         (BMI088_GYRO_2000_230_HZ | BMI088_GYRO_BANDWIDTH_MUST_Set),BMI088::GYRO_BANDWIDTH_ERROR},/* Data Transfer Rate and Bandwidth Settings */
-    {BMI088_GYRO_LPM1,              BMI088_GYRO_NORMAL_MODE, BMI088::GYRO_LPM1_ERROR},/* Power Mode Selection Register */
-    {BMI088_GYRO_CTRL,              BMI088_DRDY_ON,BMI088::GYRO_CTRL_ERROR},/* Data Interrupt Trigger Register */
-    {BMI088_GYRO_INT3_INT4_IO_CONF, (BMI088_GYRO_INT3_GPIO_PP | BMI088_GYRO_INT3_GPIO_LOW),BMI088::GYRO_INT3_INT4_IO_CONF_ERROR}, /* Interrupt Pin Trigger Register */
-    {BMI088_GYRO_INT3_INT4_IO_MAP,  BMI088_GYRO_DRDY_IO_INT3,BMI088::GYRO_INT3_INT4_IO_MAP_ERROR}/* interrupt map register */
+        {BMI088_GYRO_BANDWIDTH,         (BMI088_GYRO_2000_230_HZ | BMI088_GYRO_BANDWIDTH_MUST_Set),BMI088::GYRO_BANDWIDTH_ERROR},/* Data Transfer Rate and Bandwidth Settings */
+        {BMI088_GYRO_LPM1,              BMI088_GYRO_NORMAL_MODE, BMI088::GYRO_LPM1_ERROR},/* Power Mode Selection Register */
+        {BMI088_GYRO_CTRL,              BMI088_DRDY_ON,BMI088::GYRO_CTRL_ERROR},/* Data Interrupt Trigger Register */
+        {BMI088_GYRO_INT3_INT4_IO_CONF, (BMI088_GYRO_INT3_GPIO_PP | BMI088_GYRO_INT3_GPIO_LOW),BMI088::GYRO_INT3_INT4_IO_CONF_ERROR}, /* Interrupt Pin Trigger Register */
+        {BMI088_GYRO_INT3_INT4_IO_MAP,  BMI088_GYRO_DRDY_IO_INT3,BMI088::GYRO_INT3_INT4_IO_MAP_ERROR}/* interrupt map register */
     };
 
 

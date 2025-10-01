@@ -69,14 +69,14 @@ namespace Device{
         static uint8_t readReg(Sensor_cfg info, uint8_t reg);
         static void readRegs(Sensor_cfg info, uint8_t reg, uint8_t* data, uint8_t len);
 
-        Status_e accelInit();
-        Status_e gyroInit();
+        static Status_e accelInit();
+        static Status_e gyroInit();
 
         static constexpr float TEMP_FACTOR = 0.125f;
         static constexpr float TEMP_OFFSET = 23.0f;
         static constexpr uint32_t WRITE_ACCEL_REG_NUM = 6;
         static constexpr uint32_t WRITE_GYRO_REG_NUM = 6;
-        static constexpr float ACCEL_SENSITIVITY = 6.0f / 32768.0f * 9.80665f; // ±3g
+        static constexpr float ACCEL_SENSITIVITY = 6.0f / 32768.0f * 9.80665f; // ±6g
         static constexpr float GYRO_SENSITIVITY = 2000.0f / 32768.0f * (3.14159265358979323846f / 180.0f); // ±2000°/s
 
         static inline const Sensor_cfg Accel_cfg = {CS1_ACCEL_GPIO_Port, CS1_ACCEL_Pin, Accel};
