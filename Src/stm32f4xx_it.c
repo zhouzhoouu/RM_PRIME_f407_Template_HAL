@@ -256,11 +256,17 @@ void TIM2_IRQHandler(void)
 void USART3_IRQHandler(void)
 {
   /* USER CODE BEGIN USART3_IRQn 0 */
-  if(__HAL_UART_GET_FLAG(&huart3, UART_FLAG_IDLE) != RESET) {
-      __HAL_UART_CLEAR_IDLEFLAG(&huart3);
-      extern void USART3_IDEL_IRQHandler(UART_HandleTypeDef *huart);
-      USART3_IDEL_IRQHandler(&huart3);
+
+  if(huart3.Instance->SR & UART_FLAG_RXNE)//接收到数据
+  {
+    __HAL_UART_CLEAR_PEFLAG(&huart3);
   }
+  else if(__HAL_UART_GET_FLAG(&huart3, UART_FLAG_IDLE) != RESET) {
+    __HAL_UART_CLEAR_IDLEFLAG(&huart3);
+    extern void USART3_IDEL_IRQHandler(UART_HandleTypeDef *huart);
+    USART3_IDEL_IRQHandler(&huart3);
+  }
+
   /* USER CODE END USART3_IRQn 0 */
   HAL_UART_IRQHandler(&huart3);
   /* USER CODE BEGIN USART3_IRQn 1 */

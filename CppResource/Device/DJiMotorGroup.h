@@ -21,7 +21,7 @@ namespace Device {
         bool receiveMessage(uint32_t id, uint8_t *pdata, uint32_t len) override;
         bool isMatchId(uint32_t id) const override;
 
-        const MotorState* getMotorState(int index) const;
+        const MotorState getMotorState(int index) const;
         void setMotorCurrent(int16_t* current);
 
         ~DJiMotorGroup() override = default;

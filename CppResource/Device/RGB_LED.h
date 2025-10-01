@@ -17,8 +17,11 @@ namespace Device
 
     private:
         uint32_t color;
+
         RGB_LED();
         ~RGB_LED() = default;
+        RGB_LED(const RGB_LED&) = delete;
+        RGB_LED& operator=(const RGB_LED&) = delete;
 
     };
 }

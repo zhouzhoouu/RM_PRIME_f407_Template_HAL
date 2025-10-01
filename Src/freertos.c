@@ -50,6 +50,7 @@
 osThreadId DefaultHandle;
 osThreadId TestHandle;
 osThreadId DebugHandle;
+osThreadId INSHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -59,6 +60,7 @@ osThreadId DebugHandle;
 void Default_task(void const * argument);
 extern void TestTask(void const * argument);
 extern void DebugTask(void const * argument);
+extern void INS_Task(void const * argument);
 
 extern void MX_USB_DEVICE_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -133,6 +135,10 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of Debug */
   osThreadDef(Debug, DebugTask, osPriorityNormal, 0, 128);
   DebugHandle = osThreadCreate(osThread(Debug), NULL);
+
+  /* definition and creation of INS */
+  osThreadDef(INS, INS_Task, osPriorityHigh, 0, 256);
+  INSHandle = osThreadCreate(osThread(INS), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */

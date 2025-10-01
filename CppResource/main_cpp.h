@@ -27,11 +27,6 @@ extern "C" {
 
 void app_init_function(void);
 
-void TestTask(void const * argument);
-void DebugTask(void const * argument);
-
-
-
 
 #ifdef __cplusplus
 }

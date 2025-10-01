@@ -3,7 +3,11 @@
 
 #include "main_cpp.h"
 
+#define DBUS_FRAME_LENGTH 18
+#define RC_CH_VALUE_OFFSET 1024
+
 namespace Device {
+
     class DBus {
     public:
         struct RCState {
@@ -15,21 +19,23 @@ namespace Device {
             uint8_t press_l;    // 0 or 1
             uint8_t press_r;    // 0 or 1
             uint16_t key_code;  // bit field
-        };
+        } __attribute__((packed));
 
-        DBus();
-        void init();
-        bool receiveMessage(uint8_t *pdata, uint32_t len);
-        const RCState* getState() const;
+        static DBus &getInstance();
+        //输入18字节数据解析
+        void receiveMessage(uint8_t *pdata);
+        const volatile RCState* getState() const;
 
     private:
-        UART_HandleTypeDef *hUART;
-        RCState state;
-        uint8_t buffer[18];
-        uint8_t bufferIndex;
-        uint8_t frameLength;
-        uint16_t crc;
-        uint16_t calcCRC(const uint8_t* data, uint32_t len);
+
+        DBus();
+        ~DBus() = default;
+        DBus(const DBus&) = delete;
+        DBus& operator=(const DBus&) = delete;
+
+        RCState state[2]{};
+        volatile uint32_t active_index;
+
     };
 }
 

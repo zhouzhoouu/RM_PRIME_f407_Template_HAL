@@ -37,9 +37,8 @@ namespace Device{
         return true;
     }
 
-    const DJiMotorGroup::MotorState* DJiMotorGroup::getMotorState(int index) const {
-        if(index < 0 || index >= 4) return nullptr;
-        return &motors[activeGroup[index]][index];
+    const DJiMotorGroup::MotorState DJiMotorGroup::getMotorState(int index) const {
+        return motors[activeGroup[index]][index];
     }
 
     void DJiMotorGroup::setMotorCurrent(int16_t* current){
