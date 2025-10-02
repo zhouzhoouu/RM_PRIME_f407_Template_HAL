@@ -39,6 +39,7 @@ namespace Device{
 
         void init();
         Measurement GetMeasurement();
+        void GetMeasurement(float *acc, float *gyro, float *temp);
 
     private:
         typedef enum {

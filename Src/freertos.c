@@ -51,6 +51,7 @@ osThreadId DefaultHandle;
 osThreadId TestHandle;
 osThreadId DebugHandle;
 osThreadId INSHandle;
+osThreadId MotionControlHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -61,6 +62,7 @@ void Default_task(void const * argument);
 extern void TestTask(void const * argument);
 extern void DebugTask(void const * argument);
 extern void INS_Task(void const * argument);
+extern void MotionControlTask(void const * argument);
 
 extern void MX_USB_DEVICE_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -129,7 +131,7 @@ void MX_FREERTOS_Init(void) {
   DefaultHandle = osThreadCreate(osThread(Default), NULL);
 
   /* definition and creation of Test */
-  osThreadDef(Test, TestTask, osPriorityNormal, 0, 512);
+  osThreadDef(Test, TestTask, osPriorityNormal, 0, 128);
   TestHandle = osThreadCreate(osThread(Test), NULL);
 
   /* definition and creation of Debug */
@@ -137,8 +139,12 @@ void MX_FREERTOS_Init(void) {
   DebugHandle = osThreadCreate(osThread(Debug), NULL);
 
   /* definition and creation of INS */
-  osThreadDef(INS, INS_Task, osPriorityHigh, 0, 256);
+  osThreadDef(INS, INS_Task, osPriorityHigh, 0, 128);
   INSHandle = osThreadCreate(osThread(INS), NULL);
+
+  /* definition and creation of MotionControl */
+  osThreadDef(MotionControl, MotionControlTask, osPriorityNormal, 0, 512);
+  MotionControlHandle = osThreadCreate(osThread(MotionControl), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */

@@ -1,21 +1,8 @@
 #include "TaskList.h"
 #include "RGB_LED.h"
-#include "DJiMotorGroup.h"
-#include "DM4310.h"
-#include "DeltaPID.h"
-#include "DBus.h"
+
 
 using namespace Device;
-using namespace Component;
-
-DJiMotorGroup m3508Group_Chassis(&hcan1, 0x201, 0x200);
-DJiMotorGroup m3508Group_frib(&hcan2, 0x204, 0x1ff);
-DJiMotorGroup m3508Group_triger(&hcan1, 0x204, 0x1ff);
-DM4310 YawMotor(&hcan1, 2);
-DM4310 PithMotor(&hcan2, 1);
-
-DeltaPID M3508_Speed_PID(9.0f, 0.2f, 30.0f, 0.0f, 16384.0f, -16384.0f);
-
 
 
 void TestTask(void const * argument){
@@ -23,26 +10,11 @@ void TestTask(void const * argument){
     uint32_t col = 0;
 
     RGB_LED &hLED = RGB_LED::getInstance();
-    DBus &hDbus = DBus::getInstance();
-
     hLED.setColor(0xFFFF00FF);
 
 
     while (1){
 
-        short refc = (int16_t)M3508_Speed_PID.Output;
-
-        float ref_ang = hDbus.getState()->ch[1] * (1/2000.f);
-
-        int16_t cur[] = {refc, 0, 0, 0};
-        m3508Group_Chassis.setMotorCurrent(cur);
-
-        float target_v = hDbus.getState()->ch[0]*2;
-
-        M3508_Speed_PID.Run(target_v, m3508Group_Chassis.getMotorState(0).speed);
-
-        YawMotor.setMITcmd(0,0,10,1,0);
-        PithMotor.setMITcmd(ref_ang,0,10,1,0);
 
         if(col)
             hLED.setColor(0xFFFF00FF);
@@ -50,28 +22,8 @@ void TestTask(void const * argument){
             hLED.setColor(0xFF000000);
         col = !col;
 
-        osDelay(1);
+        osDelay(500);
 
     }
 
-}
-
-
-void DebugTask(void const * argument){
-
-    while (1){
-
-        DBus &hDbus = DBus::getInstance();
-        const volatile DBus::RCState* sta = hDbus.getState();
-
-        int16_t pack[3];
-        //pack[0] = m3508Group_Chassis.getMotorState(0).angle;
-        pack[0] = sta->ch[0]*2;
-        pack[1] = m3508Group_Chassis.getMotorState(0).speed;
-        //pack[2] = m3508Group_Chassis.getMotorState(0).current;
-
-        Debug::print_vofa<short>(pack, 2);
-
-        osDelay(50);
-    }
 }

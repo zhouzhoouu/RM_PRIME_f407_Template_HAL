@@ -23,9 +23,6 @@ namespace Device {
         struct MotorState {
             uint8_t id;             // 控制器id
             StateCode sta;            // 状态类型
-            uint16_t pos_int;
-            uint16_t vel_int;
-            uint16_t tor_int;
             float pos;              // 位置信息
             float vel;              // 速度信息
             float tor;              // 扭矩信息
@@ -38,13 +35,17 @@ namespace Device {
         void init() override;
         bool receiveMessage(uint32_t id, uint8_t *pdata, uint32_t len) override;
 
+        MotorState getMotorState();
         void setMITcmd(float target_pos, float target_vel, float Kp, float Kd, float target_tor);
         void setPosZero();
 
     private:
-        MotorState state;
+        MotorState state[2];
+        volatile uint32_t active_ind;
         static int float_to_uint(float x_float, float x_min, float x_max, int bits);
         static float uint_to_float(int x_int, float x_min, float x_max, int bits);
+
+        static constexpr float PI = 3.141592653f;
 
     };
 }

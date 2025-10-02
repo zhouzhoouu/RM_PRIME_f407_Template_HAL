@@ -12,6 +12,7 @@ extern "C" {
 void TestTask(void const * argument);
 void DebugTask(void const * argument);
 void INS_Task(void const * argument);
+void MotionControlTask(void const * argument);
 
 #ifdef __cplusplus
 }

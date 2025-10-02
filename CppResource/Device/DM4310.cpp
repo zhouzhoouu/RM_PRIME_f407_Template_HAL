@@ -3,7 +3,8 @@
 namespace Device{
 
     DM4310::DM4310(CAN_HandleTypeDef *hc, uint32_t motorid):
-            InterfaceCAN(hc, 0x010+motorid, motorid)
+    InterfaceCAN(hc, 0x010+motorid, motorid),
+            active_ind(0)
     {
 
     }
@@ -18,13 +19,21 @@ namespace Device{
 
     bool DM4310::receiveMessage(uint32_t id, uint8_t *pdata, uint32_t len){
 
-        state.id = (uint8_t)(pdata[0] & 0x0f);
-        state.sta = (StateCode)(pdata[0] >> 4);
-        state.pos = (uint16_t)(pdata[1] << 8 | pdata[2]);
-        state.vel = (uint16_t)(pdata[3] << 4 | pdata[4] >> 4);
-        state.tor = (uint16_t)(((pdata[4] & 0x0f) << 8) | pdata[5]);
-        state.T_Mos = (float)(pdata[6]);
-        state.T_Rotor = (float)(pdata[7]);
+        uint32_t next_ind = !active_ind;
+
+        state[next_ind].id = (uint8_t)(pdata[0] & 0x0f);
+        state[next_ind].sta = (StateCode)(pdata[0] >> 4);
+        auto pos_int = (uint16_t)(pdata[1] << 8 | pdata[2]);
+        auto vel_int = (uint16_t)(pdata[3] << 4 | pdata[4] >> 4);
+        auto tor_int = (uint16_t)(((pdata[4] & 0x0f) << 8) | pdata[5]);
+        state[next_ind].T_Mos = (float)(pdata[6]);
+        state[next_ind].T_Rotor = (float)(pdata[7]);
+
+        state[next_ind].pos = uint_to_float(pos_int, -4*PI,  4*PI, 16);
+        state[next_ind].vel = uint_to_float(vel_int, -PI*10, PI*10, 12);
+        state[next_ind].tor = uint_to_float(tor_int, -10, 10, 12);
+
+        active_ind = next_ind;
 
         return true;
     }
@@ -34,8 +43,8 @@ namespace Device{
 
         uint16_t pos_tmp,vel_tmp,kp_tmp,kd_tmp,tor_tmp;
 
-        pos_tmp = float_to_uint(target_pos,  -3.14159f,  3.14159f,  16);
-        vel_tmp = float_to_uint(target_vel,  -30,  30,  12);
+        pos_tmp = float_to_uint(target_pos,  -4*PI,  4*PI,  16);
+        vel_tmp = float_to_uint(target_vel,  -PI*10,  PI*10,  12);
         kp_tmp  = float_to_uint(Kp,   0, 500, 12);
         kd_tmp  = float_to_uint(Kd,   0, 5, 12);
         tor_tmp = float_to_uint(target_tor, -10,  10,  12);
@@ -52,6 +61,10 @@ namespace Device{
 
         uint8_t len = 8;
         sendMessage(pdata, len);
+    }
+
+    DM4310::MotorState DM4310::getMotorState() {
+        return state[active_ind];
     }
 
     void DM4310::setPosZero() {

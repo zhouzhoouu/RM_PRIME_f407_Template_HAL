@@ -76,7 +76,7 @@ namespace Device {
     }
 
     BMI088::Measurement BMI088::GetMeasurement() {
-        Measurement m;
+        Measurement m{};
         Raw_data raw = readRawData();
         m.acc[0] = (float)raw.acc[0] * BMI088::ACCEL_SENSITIVITY;
         m.acc[1] = (float)raw.acc[1] * BMI088::ACCEL_SENSITIVITY;
@@ -86,6 +86,17 @@ namespace Device {
         m.gyro[2] = (float)raw.gyro[2] * BMI088::GYRO_SENSITIVITY;
         m.temp = (float)raw.temp * BMI088::TEMP_FACTOR + BMI088::TEMP_OFFSET;
         return m;
+    }
+
+    void BMI088::GetMeasurement(float *acc, float *gyro, float *temp){
+        Raw_data raw = readRawData();
+        acc[0] = (float)raw.acc[0] * BMI088::ACCEL_SENSITIVITY;
+        acc[1] = (float)raw.acc[1] * BMI088::ACCEL_SENSITIVITY;
+        acc[2] = (float)raw.acc[2] * BMI088::ACCEL_SENSITIVITY;
+        gyro[0] = (float)raw.gyro[0] * BMI088::GYRO_SENSITIVITY;
+        gyro[1] = (float)raw.gyro[1] * BMI088::GYRO_SENSITIVITY;
+        gyro[2] = (float)raw.gyro[2] * BMI088::GYRO_SENSITIVITY;
+        *temp = (float)raw.temp * BMI088::TEMP_FACTOR + BMI088::TEMP_OFFSET;
     }
 
 
