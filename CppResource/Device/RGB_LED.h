@@ -10,6 +10,7 @@ namespace Device
     public:
         void setColor(uint32_t aRGB);
         uint32_t getColor();
+        void setColorPhase(float deg);
 
         //构造函数调用了HAL相关的函数，请不要在HAL初始化之前获取实例
         //建议在main函数中调用BSP_Init()之后获取实例

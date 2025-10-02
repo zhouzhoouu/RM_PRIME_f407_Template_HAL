@@ -4,12 +4,15 @@
 #include "DM4310.h"
 #include "DeltaPID.h"
 #include "DBus.h"
+#include "Boost/sml.hpp"
 
+namespace sml = boost::sml;
 using namespace Device;
 using namespace Component;
 
 DJiMotorGroup m3508Group_frib(&hcan2, 0x205, 0x1ff);
 DJiMotorGroup m3508Group_triger(&hcan1, 0x205, 0x1ff);
+
 
 
 namespace ChassisControl{
