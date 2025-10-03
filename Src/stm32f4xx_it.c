@@ -62,6 +62,7 @@ extern DMA_HandleTypeDef hdma_usart1_tx;
 extern DMA_HandleTypeDef hdma_usart6_rx;
 extern DMA_HandleTypeDef hdma_usart6_tx;
 extern UART_HandleTypeDef huart3;
+extern UART_HandleTypeDef huart6;
 extern TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN EV */
@@ -342,6 +343,28 @@ void DMA2_Stream7_IRQHandler(void)
   /* USER CODE BEGIN DMA2_Stream7_IRQn 1 */
 
   /* USER CODE END DMA2_Stream7_IRQn 1 */
+}
+
+/**
+  * @brief This function handles USART6 global interrupt.
+  */
+void USART6_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART6_IRQn 0 */
+  if(huart6.Instance->SR & UART_FLAG_RXNE)//接收到数据
+  {
+    __HAL_UART_CLEAR_PEFLAG(&huart6);
+  }
+  else if(__HAL_UART_GET_FLAG(&huart6, UART_FLAG_IDLE) != RESET) {
+    __HAL_UART_CLEAR_IDLEFLAG(&huart6);
+    extern void USART6_IDEL_IRQHandler(UART_HandleTypeDef *huart);
+    USART6_IDEL_IRQHandler(&huart6);
+  }
+  /* USER CODE END USART6_IRQn 0 */
+  HAL_UART_IRQHandler(&huart6);
+  /* USER CODE BEGIN USART6_IRQn 1 */
+
+  /* USER CODE END USART6_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

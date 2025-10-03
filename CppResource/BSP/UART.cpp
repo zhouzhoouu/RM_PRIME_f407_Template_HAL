@@ -5,6 +5,7 @@
 using namespace BSP;
 
 static uint8_t UART3_DMA_BUF[2][UART3_RX_BUF_LEN];
+static uint8_t UART6_DMA_BUF[2][UART6_RX_BUF_LEN];
 
 static void UART3_Init(uint8_t *rx1_buf, uint8_t *rx2_buf, uint16_t dma_buf_num)
 {
@@ -29,11 +30,11 @@ static void UART3_Init(uint8_t *rx1_buf, uint8_t *rx2_buf, uint16_t dma_buf_num)
     __HAL_DMA_ENABLE(&hdma_usart3_rx);//使能DMA
 }
 
+/*
 static void UART3_unable()
 {
     __HAL_UART_DISABLE(&huart3);
 }
-
 static void UART3_restart(uint16_t dma_buf_num)
 {
     DMA_HandleTypeDef hdma_usart3_rx = *(huart3.hdmarx);
@@ -47,8 +48,9 @@ static void UART3_restart(uint16_t dma_buf_num)
     __HAL_UART_ENABLE(&huart3);
 
 }
+*/
 
-static void USART6_Init(uint8_t *rx1_buf, uint8_t *rx2_buf, uint16_t dma_buf_num)
+static void UART6_Init(uint8_t *rx1_buf, uint8_t *rx2_buf, uint16_t dma_buf_num)
 {
 
     DMA_HandleTypeDef hdma_usart6_rx = *(huart6.hdmarx);
@@ -89,7 +91,7 @@ static void USART6_Init(uint8_t *rx1_buf, uint8_t *rx2_buf, uint16_t dma_buf_num
 void BSP::UART_UserInit(){
 
     Device::DBus::getInstance(); //初始化DBus
-
+    UART6_Init(UART6_DMA_BUF[0],UART6_DMA_BUF[1],UART6_RX_BUF_LEN);
     UART3_Init(UART3_DMA_BUF[0],UART3_DMA_BUF[1],UART3_RX_BUF_LEN);
 }
 
@@ -113,6 +115,27 @@ extern "C" void USART3_IDEL_IRQHandler(UART_HandleTypeDef *huart){
     {
         Device::DBus &hdbus = Device::DBus::getInstance();
         hdbus.receiveMessage(UART3_DMA_BUF[target_index]);//解码数据
+    }
+
+}
+
+
+
+extern "C" void USART6_IDEL_IRQHandler(UART_HandleTypeDef *huart){
+
+    static uint16_t this_time_rx_len = 0;
+    DMA_HandleTypeDef hdma_usart6_rx = *(huart->hdmarx);
+
+    __HAL_DMA_DISABLE(&hdma_usart6_rx); //失能DMA
+    this_time_rx_len = UART6_RX_BUF_LEN - hdma_usart6_rx.Instance->NDTR;//获取接收数据长度
+    hdma_usart6_rx.Instance->NDTR = UART6_RX_BUF_LEN;//重新设定数据长度
+    uint32_t target_index = (hdma_usart6_rx.Instance->CR & DMA_SxCR_CT) ? 1 : 0;//获取当前缓冲区
+    hdma_usart6_rx.Instance->CR ^= DMA_SxCR_CT; //反转缓冲区
+    __HAL_DMA_ENABLE(&hdma_usart6_rx);//使能DMA
+
+    if(this_time_rx_len == DBUS_FRAME_LENGTH)
+    {
+
     }
 
 }

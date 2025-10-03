@@ -16,8 +16,14 @@ void TestTask(void const * argument){
     uint32_t col = 0;
     hLED.setColorPhase(col);
 
-
-    hBuzzer.setFrequency(Buzzer::ToneList[0]);
+    hBuzzer.setFrequency(Buzzer::ToneList[9]);
+    hBuzzer.on();
+    osDelay(200);
+    hBuzzer.setFrequency(Buzzer::ToneList[10]);
+    osDelay(200);
+    hBuzzer.setFrequency(Buzzer::ToneList[13]);
+    osDelay(200);
+    hBuzzer.off();
 
     //hBuzzer.toggle();
 
