@@ -21,108 +21,107 @@ using namespace Component;
 
 namespace ChassisControl{
 
-    struct MoveState{
-        union {
-            struct {
-                float vx;
-                float vy;
-                float omega;
-            };
-            float data[3];
+    union MoveState{
+        struct {
+            float vx;
+            float vy;
+            float omega;
         };
+        float data[3];
     };
 
-    extern DJiMotorGroup m3508Group_Chassis;
+    //extern DJiMotorGroup m3508Group_Chassis;
 
-    //实测omega=1980时，实际转动速度2rad/s左右
     MoveState setMove(MoveState target_state);
+
 }
 
 
 namespace GimbalControl{
 
+    static float constexpr YawZero = 0.23013f;
+    static float constexpr PI = 3.141592653f;
+    static float constexpr YawGearRate = 0.7;
+    static float constexpr PithGearRate = 1.f;
+
     extern DM4310 YawMotor;
     extern DM4310 PithMotor;
 
-
+    union AxisState{
+        struct {
+            float pos;
+            float omega;
+        };
+        float data[2];
+    };
     //将角度规范化到 -PI 到 PI
     float angleMod(float angle);
 
-    void setYawRelative(float angle, float omega_forward = 0.f);
+    AxisState getYawState();
+    AxisState getPithState();
 
-    void setPithRelative(float angle, float omega_forward = 0.f);
+    void setYawRelative(AxisState target_s);
+    void setPithRelative(AxisState target_s);
 }
 
 
 namespace MotionFSM{
 
-    void IdleLoop();
-    void ChassisLeadLoop();
-    void GimbalLeadLoop();
-    void AutoAimLoop();
-    void AutoRotateLoop();
-
-    struct Init{
-        void on_entry();
-    };
-    struct Idle{
-        void on_entry();
-    };
-    struct ChassisLead{
-        void on_entry();
-    };
-    struct GimbalLead{
-        void on_entry();
-    };
-    struct AutoAim{
-        void on_entry();
-    };
-    struct AutoRotate{
-        void on_entry();
+    struct StateLoopArg{
+        ChassisControl::MoveState ChassisSta;
+        GimbalControl::AxisState YawSta;
+        GimbalControl::AxisState PithSta;
     };
 
-    struct LeverInput{
-        uint8_t Left;
-        uint8_t Right;
+    using StateHandler = StateLoopArg(*)(const volatile DBus::RCState*, INS_Device&, const StateLoopArg&);
+
+    // 各 Loop 函数需统一 StateHandler 签名
+    StateLoopArg IdleLoop(const volatile DBus::RCState*, INS_Device&, const StateLoopArg&);
+    StateLoopArg ChassisLeadLoop(const volatile DBus::RCState*, INS_Device&, const StateLoopArg&);
+    StateLoopArg GimbalLeadLoop(const volatile DBus::RCState*, INS_Device&, const StateLoopArg&);
+    StateLoopArg AutoAimLoop(const volatile DBus::RCState*, INS_Device&, const StateLoopArg&);
+    StateLoopArg AutoRotateLoop(const volatile DBus::RCState*, INS_Device&, const StateLoopArg&);
+
+
+    inline StateHandler CurrentHandler = IdleLoop;
+    constexpr StateLoopArg DefaultStateArg = {
+            {{0,0,0}},
+            {{0,0}},
+            {{0,0}}
     };
-    struct InitComplete{};
 
-    constexpr auto is_Idle = [](const LeverInput& lin){ return lin.Left == 1;};
-    constexpr auto is_ChassisLead = [](const LeverInput& lin){ return lin.Left == 3;};
-    constexpr auto is_GimbalLead = [](const LeverInput& lin){ return lin.Left==2 && lin.Right==3;};
-    constexpr auto is_AutoAim = [](const LeverInput& lin){ return lin.Left==2 && lin.Right==1;};
-    constexpr auto is_AutoRotate = [](const LeverInput& lin){ return lin.Left==2 && lin.Right==2;};
+    struct Flag{
+        bool IdleNI,ChassisLeadNI,GimbalLeadNI,AutoAimNI,AutoRotateNI;
+    };
+    volatile inline Flag InitFlag = {true,false,false,false,false};
 
 
+    //状态定义
+    struct Init{};
+    struct Idle{};
+    struct ChassisLead{};
+    struct GimbalLead{};
+    struct AutoAim{};
+    struct AutoRotate{};
+
+    //事件定义
+    struct IntoIdle{};
+    struct IntoChassisLead{};
+    struct IntoGimbalLead{};
+    struct IntoAutoAim{};
+    struct IntoAutoRotate{};
 
     struct motionTransition{
         auto operator()() const{
             using namespace boost::sml;
             return make_transition_table(
-                    *state<Idle> + event<LeverInput>[is_ChassisLead] = state<ChassisLead>,
-                    state<GimbalLead> + event<LeverInput>[is_ChassisLead] = state<ChassisLead>,
-                    state<AutoAim> + event<LeverInput>[is_ChassisLead] = state<ChassisLead>,
-                    state<AutoRotate> + event<LeverInput>[is_ChassisLead] = state<ChassisLead>,
+                    *state<Idle> + event<IntoChassisLead> / []{ CurrentHandler = ChassisLeadLoop;InitFlag.ChassisLeadNI = true;} = state<ChassisLead>,
 
-                    state<Idle> + event<LeverInput>[is_GimbalLead] = state<GimbalLead>,
-                    state<ChassisLead> + event<LeverInput>[is_GimbalLead] = state<GimbalLead>,
-                    state<AutoAim> + event<LeverInput>[is_GimbalLead] = state<GimbalLead>,
-                    state<AutoRotate> + event<LeverInput>[is_GimbalLead] = state<GimbalLead>,
-
-                    state<Idle> + event<LeverInput>[is_AutoAim] = state<AutoAim>,
-                    state<ChassisLead> + event<LeverInput>[is_AutoAim] = state<AutoAim>,
-                    state<GimbalLead> + event<LeverInput>[is_AutoAim] = state<AutoAim>,
-                    state<AutoRotate> + event<LeverInput>[is_AutoAim] = state<AutoAim>,
-
-                    state<Idle> + event<LeverInput>[is_AutoRotate] = state<AutoRotate>,
-                    state<ChassisLead> + event<LeverInput>[is_AutoRotate] = state<AutoRotate>,
-                    state<GimbalLead> + event<LeverInput>[is_AutoRotate] = state<AutoRotate>,
-                    state<AutoAim> + event<LeverInput>[is_AutoRotate] = state<AutoRotate>,
-
-                    state<ChassisLead> + event<LeverInput>[is_Idle] = state<Idle>,
-                    state<GimbalLead> + event<LeverInput>[is_Idle] = state<Idle>,
-                    state<AutoAim> + event<LeverInput>[is_Idle] = state<Idle>,
-                    state<AutoRotate> + event<LeverInput>[is_Idle] = state<Idle>
+                    state<_> + event<IntoChassisLead> / []{ CurrentHandler = ChassisLeadLoop;InitFlag.ChassisLeadNI = true;} = state<ChassisLead>,
+                    state<_> + event<IntoGimbalLead> / []{ CurrentHandler = GimbalLeadLoop;InitFlag.GimbalLeadNI = true;} = state<GimbalLead>,
+                    state<_> + event<IntoAutoAim> / []{ CurrentHandler = AutoAimLoop;InitFlag.AutoAimNI = true;} = state<AutoAim>,
+                    state<_> + event<IntoAutoRotate> / []{ CurrentHandler = AutoRotateLoop;InitFlag.AutoRotateNI = true;} = state<AutoRotate>,
+                    state<_> + event<IntoIdle> / []{ CurrentHandler = IdleLoop;InitFlag.IdleNI = true;} = state<Idle>
             );
         }
     };

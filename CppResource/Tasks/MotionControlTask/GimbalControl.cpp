@@ -2,12 +2,9 @@
 
 namespace GimbalControl{
 
-    static float constexpr PI = 3.141592653f;
 
-    DM4310 YawMotor(&hcan1, 2);
-    DM4310 PithMotor(&hcan2, 1);
-
-    DeltaPID anglePID_Yaw = DeltaPID(8.0f, 0.0f, 800.0f, 0.0f, 7, -7);
+    DM4310 YawMotor(&hcan1, 1);
+    DM4310 PithMotor(&hcan2, 2);
 
     //将角度规范化到 -PI 到 PI
     float angleMod(float angle){
@@ -16,14 +13,32 @@ namespace GimbalControl{
         return angle;
     }
 
-    void setYawRelative(float angle, float omega_forward){
-        float angle_err = angleMod(angle - YawMotor.getMotorState().pos);
-        anglePID_Yaw.Run(0, angle_err);
-        YawMotor.setMITcmd(0,omega_forward,0,1,angle_err*10.f);
+
+    AxisState getYawState(){
+        return {
+                {YawMotor.getMotorState().pos * YawGearRate,
+                 YawMotor.getMotorState().vel * YawGearRate}
+        };
     }
 
-    void setPithRelative(float angle, float omega_forward){
-        PithMotor.setMITcmd(angle,omega_forward,8,1,0);
+    AxisState getPithState(){
+        return {
+            {PithMotor.getMotorState().pos * PithGearRate,
+            PithMotor.getMotorState().vel * PithGearRate}
+        };
+    }
+
+    void setYawRelative(AxisState target_s){
+        float angle_err = angleMod(target_s.pos - YawMotor.getMotorState().pos * YawGearRate);
+        float excep_t = angle_err*10.f;
+        if(excep_t > 9.9f)excep_t = 9.9f;
+        if(excep_t < -9.9f)excep_t = -9.9f;
+
+        YawMotor.setMITcmd(0,target_s.omega * (1.f/YawGearRate),0,1,excep_t);
+    }
+
+    void setPithRelative(AxisState target_s){
+        PithMotor.setMITcmd(target_s.pos,target_s.omega * (1.f/PithGearRate),8,1,0);
     }
 
 }

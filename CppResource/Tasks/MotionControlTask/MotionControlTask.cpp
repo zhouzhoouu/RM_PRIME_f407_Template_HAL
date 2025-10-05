@@ -11,37 +11,35 @@ void MotionControlTask(void const * argument){
     DBus &hDbus = DBus::getInstance();
     INS_Device &hINS = INS_Device::getInstance();
 
-    float taget_pos = GimbalControl::YawMotor.getMotorState().pos;
-
     fsm::sm<motionTransition> motion_fsm;
+    MotionFSM::StateLoopArg input_sta{
+        ChassisControl::setMove({{0,0,0}}),
+        GimbalControl::getYawState(),
+        GimbalControl::getPithState()
+    };
 
     while (1){
 
         const volatile DBus::RCState* sta = hDbus.getState();
 
-        MotionFSM::LeverInput lin = {
-                sta->s[1],
-                sta->s[0]
-        };
+        uint8_t linLeft = sta->s[1];
+        uint8_t linRight = sta->s[0];
+        static short last_sta;
+        short sta_check = (short)(linLeft) << 8 | linRight;
+        if(last_sta != sta_check){
+            last_sta = sta_check;
+            if(linLeft == 1)motion_fsm.process_event(IntoIdle{});
+            else if(linLeft == 3)motion_fsm.process_event(IntoChassisLead{});
+            else if(linLeft==2 && linRight==3)motion_fsm.process_event(IntoGimbalLead{});
+            else if(linLeft==2 && linRight==1)motion_fsm.process_event(IntoAutoAim{});
+            else if(linLeft==2 && linRight==2)motion_fsm.process_event(IntoAutoRotate{});
+        }
 
-        motion_fsm.process_event(lin);
+        auto output_sta = MotionFSM::CurrentHandler(sta, hINS, input_sta);
 
-
-        if(motion_fsm.is(fsm::state<ChassisLead>)) {
-            ChassisLeadLoop();
-        }
-        else if(motion_fsm.is(fsm::state<GimbalLead>)){
-            GimbalLeadLoop();
-        }
-        else if(motion_fsm.is(fsm::state<AutoAim>)){
-            AutoAimLoop();
-        }
-        else if(motion_fsm.is(fsm::state<AutoRotate>)){
-            AutoRotateLoop();
-        }
-        else{
-            IdleLoop();
-        }
+        GimbalControl::setYawRelative(output_sta.YawSta);
+        GimbalControl::setPithRelative(output_sta.PithSta);
+        input_sta.ChassisSta = ChassisControl::setMove(output_sta.ChassisSta);
 
         osDelay(1);
     }
@@ -59,18 +57,19 @@ void DebugTask(void const * argument){
 
         const volatile DBus::RCState* sta = hDbus.getState();
 
-        short pack[4];
+        float pack[5];
 
 
-        pack[0] = sta->s[0];
-        pack[1] = sta->s[1];
+//        pack[0] = sta->s[0];
+//        pack[1] = sta->s[1];
 
-//        pack[0] = hINS.getAngle().yaw;
-//        pack[1] = GimbalControl::YawMotor.getMotorState().pos;
-//        pack[2] = hINS.getOmiga().yaw;
-//        pack[3] = GimbalControl::YawMotor.getMotorState().vel;
+        pack[0] = hINS.getAngle().yaw;
+        pack[1] = GimbalControl::angleMod(GimbalControl::getYawState().pos);
+        pack[2] = hINS.getOmiga().yaw;
+        pack[3] = GimbalControl::getYawState().omega;
+        pack[4] = GimbalControl::YawMotor.getMotorState().pos;
 
-        Debug::print_vofa<short>(pack, 2);
+        Debug::print_vofa(pack, 5);
 
         osDelay(50);
     }
