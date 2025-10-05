@@ -19,6 +19,7 @@ namespace Device {
         static Buzzer &getInstance();
 
         static constexpr uint32_t ToneList[] = {
+                40000,    //Nop
                 440,  //A4
                 494,  //B4
                 523,  //C5

@@ -12,5 +12,6 @@ void app_init_function(void) {
     Device::BMI088 &hIMU = Device::BMI088::getInstance();
     hIMU.init();
 
+
 }
 
