@@ -2,17 +2,19 @@
 #define F407_RM_TMPLATE_HAL_REFEREETYPE_H
 
 #include "main_cpp.h"
+#include <cstring>
+#include <tuple>
 
 namespace RefereeType
 {
     constexpr uint8_t HEADER_SOF = 0xA5;
     constexpr uint32_t FRAME_MAX_SIZE = 128;
-    constexpr uint32_t HEADER_SIZE = sizeof(frame_header_struct_t);
+    constexpr uint32_t HEADER_SIZE = 5;//sizeof(frame_header_struct_t);
     constexpr uint32_t CMD_SIZE = 2;
     constexpr uint32_t CRC16_SIZE = 2;
     constexpr uint32_t HEADER_CRC_LEN = (HEADER_SIZE + CRC16_SIZE);
     constexpr uint32_t HEADER_CRC_CMDID_LEN = (HEADER_SIZE + CRC16_SIZE + sizeof(uint16_t));
-    constexpr uint32_t HEADER_CMDID_LEN
+    constexpr uint32_t HEADER_CMDID_LEN = (HEADER_SIZE + sizeof(uint16_t));
 
     enum CmdID
     {
@@ -41,32 +43,32 @@ namespace RefereeType
         IDCustomData,
     };
 
-    struct FrameHeader
-    {
-        uint8_t SOF;
-        uint16_t data_length;
-        uint8_t seq;
-        uint8_t CRC8;
-    };
-
-    enum UnpackStep
-    {
-        STEP_HEADER_SOF  = 0,
-        STEP_LENGTH_LOW  = 1,
-        STEP_LENGTH_HIGH = 2,
-        STEP_FRAME_SEQ   = 3,
-        STEP_HEADER_CRC8 = 4,
-        STEP_DATA_CRC16  = 5,
-    };
-
-    struct UnpackData
-    {
-        frame_header_struct_t *p_header;
-        uint16_t       data_len;
-        uint8_t        protocol_packet[REF_PROTOCOL_FRAME_MAX_SIZE];
-        unpack_step_e  unpack_step;
-        uint16_t       index;
-    };
+    // struct FrameHeader
+    // {
+    //     uint8_t SOF;
+    //     uint16_t data_length;
+    //     uint8_t seq;
+    //     uint8_t CRC8;
+    // };
+    //
+    // enum UnpackStep
+    // {
+    //     STEP_HEADER_SOF  = 0,
+    //     STEP_LENGTH_LOW  = 1,
+    //     STEP_LENGTH_HIGH = 2,
+    //     STEP_FRAME_SEQ   = 3,
+    //     STEP_HEADER_CRC8 = 4,
+    //     STEP_DATA_CRC16  = 5,
+    // };
+    //
+    // struct UnpackData
+    // {
+    //     frame_header_struct_t *p_header;
+    //     uint16_t       data_len;
+    //     uint8_t        protocol_packet[REF_PROTOCOL_FRAME_MAX_SIZE];
+    //     unpack_step_e  unpack_step;
+    //     uint16_t       index;
+    // };
 
 
     enum RobotID
@@ -97,7 +99,12 @@ namespace RefereeType
         PROGRESS_CALCULATING = 5,
     };
 
-    struct GameState //0x0001
+    template<uint16_t ID>
+    struct RefereeCMD{
+        static constexpr uint16_t CMD_ID = ID;
+    };
+
+    struct GameState: RefereeCMD<0x0001> //0x0001
     {
         uint8_t game_type : 4;
         uint8_t game_progress : 4;
@@ -105,12 +112,12 @@ namespace RefereeType
         uint64_t SyncTimeStamp;
     }__attribute__ ((packed));
 
-    struct GameResult //0x0002
+    struct GameResult: RefereeCMD<0x0002> //0x0002
     {
         uint8_t winner;
     }__attribute__ ((packed));
 
-    struct GameRobotHP // 0x0003
+    struct GameRobotHP: RefereeCMD<0x0003> // 0x0003
     {
         uint16_t red_1_robot_HP;
         uint16_t red_2_robot_HP;
@@ -130,28 +137,27 @@ namespace RefereeType
         uint16_t blue_base_HP;
     } __attribute__ ((packed));
 
-    typedef struct // 0x0101
+    struct EventData : RefereeCMD<0x0101> // 0x0101
     {
         uint32_t event_type;
-    } __attribute__ ((packed)) ext_event_data_t;
+    } __attribute__ ((packed));
 
-    typedef struct // 0x0102
+    struct SupplyProjectileAction : RefereeCMD<0x0102> // 0x0102
     {
         uint8_t reserved;
         uint8_t supply_robot_id;
         uint8_t supply_projectile_step;
         uint8_t supply_projectile_num;
-    } __attribute__ ((packed)) ext_supply_projectile_action_t;
+    } __attribute__ ((packed));
 
-    typedef struct // 0104
+    struct RefereeWarning : RefereeCMD<0x0104> // 0x0104
     {
         uint8_t level;
         uint8_t offending_robot_id;
         uint8_t count;
-    } __attribute__ ((packed)) ext_referee_warning_t;
+    } __attribute__ ((packed));
 
-
-    typedef struct // 0x0201
+    struct GameRobotState : RefereeCMD<0x0201> // 0x0201
     {
         uint8_t robot_id;
         uint8_t robot_level;
@@ -163,9 +169,9 @@ namespace RefereeType
         uint8_t power_management_gimbal_output : 1;
         uint8_t power_management_chassis_output : 1;
         uint8_t power_management_shooter_output : 1;
-    } __attribute__ ((packed)) ext_game_robot_state_t;
+    } __attribute__ ((packed));
 
-    typedef struct // 0x0202
+    struct PowerHeatData : RefereeCMD<0x0202> // 0x0202
     {
         uint16_t reserved1;
         uint16_t reserved2;
@@ -174,16 +180,16 @@ namespace RefereeType
         uint16_t shooter_id1_17mm_cooling_heat;
         uint16_t shooter_id2_17mm_cooling_heat;
         uint16_t shooter_id1_42mm_cooling_heat;
-    } __attribute__ ((packed)) ext_power_heat_data_t;
+    } __attribute__ ((packed));
 
-    typedef struct // 0x0203
+    struct GameRobotPos : RefereeCMD<0x0203> // 0x0203
     {
         float x;
         float y;
         float angle;
-    } __attribute__ ((packed)) ext_game_robot_pos_t;
+    } __attribute__ ((packed));
 
-    typedef struct // 0x0204
+    struct BuffMusk : RefereeCMD<0x0204> // 0x0204
     {
         uint8_t recovery_buff;
         uint8_t cooling_buff;
@@ -191,41 +197,41 @@ namespace RefereeType
         uint8_t vulnerability_buff;
         uint16_t attack_buff;
         uint8_t remaining_energy;
-    } __attribute__ ((packed)) ext_buff_musk_t;
+    } __attribute__ ((packed));
 
-    typedef struct // 0x0205
+    struct AerialRobotEnergy : RefereeCMD<0x0205> // 0x0205
     {
         uint8_t airforce_status;
         uint8_t time_remain;
-    } __attribute__ ((packed)) aerial_robot_energy_t;
+    } __attribute__ ((packed));
 
-    typedef struct // 0x0206
+    struct RobotHurt : RefereeCMD<0x0206> // 0x0206
     {
         uint8_t armor_type : 4;
         uint8_t hurt_type : 4;
-    } __attribute__ ((packed)) ext_robot_hurt_t;
+    } __attribute__ ((packed));
 
-    typedef struct // 0x0207
+    struct ShootData : RefereeCMD<0x0207> // 0x0207
     {
         uint8_t bullet_type;
         uint8_t shooter_number;
-        uint8_t bullet_freq; //????
-        float bullet_speed;  //?????
-    } __attribute__ ((packed)) ext_shoot_data_t;
+        uint8_t bullet_freq;
+        float bullet_speed;
+    } __attribute__ ((packed));
 
-    typedef struct   //0208
+    struct BulletRemaining : RefereeCMD<0x0208> // 0x0208
     {
         uint16_t projectile_allowance_17mm;
         uint16_t projectile_allowance_42mm;
         uint16_t remaining_gold_coin;
-    } __attribute__ ((packed)) ext_bullet_remaining_t;
+    } __attribute__ ((packed));
 
-    typedef struct // 0209
+    struct RFIDStatus : RefereeCMD<0x0209> // 0x0209
     {
         uint32_t rfid_status;
-    } __attribute__ ((packed)) ext_rfid_status_t;
+    } __attribute__ ((packed));
 
-    typedef struct //020B
+    struct GroundRobotPosition : RefereeCMD<0x020B> // 0x020B
     {
         float hero_x;
         float hero_y;
@@ -237,50 +243,32 @@ namespace RefereeType
         float standard_4_y;
         float reserved1;
         float reserved2;
-    } __attribute__ ((packed)) ext_ground_robot_position_t;
+    } __attribute__ ((packed));
 
-    typedef struct //020C
+    struct RadarMarkData : RefereeCMD<0x020C> // 0x020C
     {
         uint8_t mark_progress;
-    } __attribute__ ((packed)) ext_radar_mark_data_t;
+    } __attribute__ ((packed));
 
-    typedef struct // 0x020D
+    struct SentryInfo : RefereeCMD<0x020D> // 0x020D
     {
         uint32_t sentry_info;
-    } __attribute__ ((packed)) ext_sentry_info_t;
+    } __attribute__ ((packed));
 
-    typedef struct // 0x020E
+    struct RadarInfo : RefereeCMD<0x020E> // 0x020E
     {
         uint8_t radar_info;
-    } __attribute__ ((packed)) ext_radar_info_t;
+    } __attribute__ ((packed));
 
-    typedef struct // 0x0301
+    struct StudentInteractiveData : RefereeCMD<0x0301> // 0x0301
     {
         uint16_t data_cmd_id;
         uint16_t sender_id;
         uint16_t receiver_id;
-        uint8_t user_data[1];//x???113
-    } __attribute__ ((packed)) ext_student_interactive_data_t;
+        uint8_t user_data[1];
+    } __attribute__ ((packed));
 
-    typedef struct
-    {
-        float data1;
-        float data2;
-        float data3;
-        uint8_t data4;
-    } __attribute__ ((packed)) custom_data_t;
-
-    typedef struct
-    {
-        uint8_t data[64];
-    } __attribute__ ((packed)) ext_up_stream_data_t;
-
-    typedef struct
-    {
-        uint8_t data[32];
-    } __attribute__ ((packed)) ext_download_stream_data_t;
-
-    typedef struct // 0x0307
+    struct MapData : RefereeCMD<0x0307> // 0x0307
     {
         uint8_t intention;
         uint16_t start_position_x;
@@ -288,9 +276,9 @@ namespace RefereeType
         int8_t delta_x[49];
         int8_t delta_y[49];
         uint16_t sender_id;
-    } __attribute__ ((packed)) ext_map_data_t;
+    } __attribute__ ((packed));
 
-    typedef struct // 0x0306
+    struct CustomClientData : RefereeCMD<0x0306> // 0x0306
     {
         uint16_t key_value;
         uint16_t x_position : 12;
@@ -298,14 +286,57 @@ namespace RefereeType
         uint16_t y_position : 12;
         uint16_t mouse_right : 4;
         uint16_t reserved;
-    } __attribute__ ((packed)) ext_custom_client_data_t;
+    } __attribute__ ((packed));
 
-    typedef struct // 0x0308
+    struct CustomInfo : RefereeCMD<0x0308> // 0x0308
     {
         uint16_t sender_id;
         uint16_t receiver_id;
         uint8_t user_data[30];
-    } __attribute__ ((packed)) ext_custom_info_t;
+    } __attribute__ ((packed));
+
+    using RefereeTupleType =  std::tuple<
+                RefereeType::GameState,
+                RefereeType::GameResult,
+                RefereeType::GameRobotHP,
+                RefereeType::EventData,
+                RefereeType::SupplyProjectileAction,
+                RefereeType::RefereeWarning,
+                RefereeType::GameRobotState,
+                RefereeType::PowerHeatData,
+                RefereeType::GameRobotPos,
+                RefereeType::BuffMusk,
+                RefereeType::AerialRobotEnergy,
+                RefereeType::RobotHurt,
+                RefereeType::ShootData,
+                RefereeType::BulletRemaining,
+                RefereeType::RFIDStatus,
+                RefereeType::GroundRobotPosition,
+                RefereeType::RadarMarkData,
+                RefereeType::SentryInfo,
+                RefereeType::RadarInfo,
+                RefereeType::StudentInteractiveData,
+                RefereeType::MapData,
+                RefereeType::CustomClientData,
+                RefereeType::CustomInfo
+            >;
+
+
+    template <std::size_t I = 0>
+    void packetWriteTemplate(uint16_t ID, uint8_t* data, uint16_t len, RefereeTupleType& tuple) {
+        if constexpr (I < std::tuple_size_v<RefereeTupleType>) {
+            using T = std::tuple_element_t<I, RefereeTupleType>;
+            if constexpr (std::is_base_of<RefereeCMD<T::CMD_ID>, T>::value) {
+                if (T::CMD_ID == ID) {
+                    std::memcpy(&std::get<I>(tuple), data, std::min<uint16_t>(len, sizeof(T)));
+                    return;
+                }
+            }
+            packetWriteTemplate<I + 1>(ID, data, len, tuple);
+        }
+    }
+
+
 
 }
 

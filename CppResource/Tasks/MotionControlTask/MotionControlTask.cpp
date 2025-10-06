@@ -12,13 +12,13 @@ void MotionControlTask(void const * argument){
     DBus &hDbus = DBus::getInstance();
     INS_Device &hINS = INS_Device::getInstance();
 
+    osDelay(200);
     fsm::sm<motionTransition> motion_fsm;
     MotionFSM::StateLoopArg input_sta{
         ChassisControl::setMove({{0,0,0}}),
         GimbalControl::getYawState(),
         GimbalControl::getPithState()
     };
-    osDelay(200);
     while (1){
 
         const volatile DBus::RCState* sta = hDbus.getState();
