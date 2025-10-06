@@ -1,4 +1,5 @@
 #include "MotionControl.h"
+#include "MotionFSM.h"
 
 using namespace MotionFSM;
 
@@ -17,7 +18,7 @@ void MotionControlTask(void const * argument){
         GimbalControl::getYawState(),
         GimbalControl::getPithState()
     };
-
+    osDelay(200);
     while (1){
 
         const volatile DBus::RCState* sta = hDbus.getState();
@@ -26,14 +27,26 @@ void MotionControlTask(void const * argument){
         uint8_t linRight = sta->s[0];
         static short last_sta;
         short sta_check = (short)(linLeft) << 8 | linRight;
-        if(last_sta != sta_check){
-            last_sta = sta_check;
-            if(linLeft == 1)motion_fsm.process_event(IntoIdle{});
-            else if(linLeft == 3)motion_fsm.process_event(IntoChassisLead{});
-            else if(linLeft==2 && linRight==3)motion_fsm.process_event(IntoGimbalLead{});
-            else if(linLeft==2 && linRight==1)motion_fsm.process_event(IntoAutoAim{});
-            else if(linLeft==2 && linRight==2)motion_fsm.process_event(IntoAutoRotate{});
+
+        if(InitFlag.InitNI){
+
         }
+        else{
+            if(motion_fsm.is(fsm::state<Init>))
+                motion_fsm.process_event(InitComplete{});
+            else if(last_sta != sta_check){
+                last_sta = sta_check;
+                if(linLeft == 1)motion_fsm.process_event(IntoIdle{});
+                else if(linLeft == 3)motion_fsm.process_event(IntoChassisLead{});
+                else if(linLeft==2 && linRight==3)motion_fsm.process_event(IntoGimbalLead{});
+                else if(linLeft==2 && linRight==1)motion_fsm.process_event(IntoAutoAim{});
+                else if(linLeft==2 && linRight==2)motion_fsm.process_event(IntoAutoRotate{});
+            }
+        }
+
+
+        input_sta.YawSta = GimbalControl::getYawState();
+        input_sta.PithSta = GimbalControl::getPithState();
 
         auto output_sta = MotionFSM::CurrentHandler(sta, hINS, input_sta);
 
@@ -65,11 +78,11 @@ void DebugTask(void const * argument){
 
         pack[0] = hINS.getAngle().yaw;
         pack[1] = GimbalControl::angleMod(GimbalControl::getYawState().pos);
-        pack[2] = hINS.getOmiga().yaw;
-        pack[3] = GimbalControl::getYawState().omega;
-        pack[4] = GimbalControl::YawMotor.getMotorState().pos;
+        pack[2] = GimbalControl::getYawState().omega;
+//        pack[2] = hINS.getAccel().x;
+//        pack[3] = hINS.getAccel().y;
 
-        Debug::print_vofa(pack, 5);
+        Debug::print_vofa(pack, 3);
 
         osDelay(50);
     }

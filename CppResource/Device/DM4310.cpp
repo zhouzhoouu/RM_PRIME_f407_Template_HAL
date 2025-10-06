@@ -29,8 +29,8 @@ namespace Device{
         state[next_ind].T_Mos = (float)(pdata[6]);
         state[next_ind].T_Rotor = (float)(pdata[7]);
 
-        state[next_ind].pos = uint_to_float(pos_int, -4*PI,  4*PI, 16);
-        state[next_ind].vel = uint_to_float(vel_int, -PI*10, PI*10, 12);
+        state[next_ind].pos = uint_to_float(pos_int, -10*PI,  10*PI, 16);
+        state[next_ind].vel = uint_to_float(vel_int, -30, 30, 12);
         state[next_ind].tor = uint_to_float(tor_int, -10, 10, 12);
 
         active_ind = next_ind;
@@ -43,8 +43,8 @@ namespace Device{
 
         uint16_t pos_tmp,vel_tmp,kp_tmp,kd_tmp,tor_tmp;
 
-        pos_tmp = float_to_uint(target_pos,  -4*PI,  4*PI,  16);
-        vel_tmp = float_to_uint(target_vel,  -PI*10,  PI*10,  12);
+        pos_tmp = float_to_uint(target_pos,  -10*PI,  10*PI,  16);
+        vel_tmp = float_to_uint(target_vel,  -30,  30,  12);
         kp_tmp  = float_to_uint(Kp,   0, 500, 12);
         kd_tmp  = float_to_uint(Kd,   0, 5, 12);
         tor_tmp = float_to_uint(target_tor, -10,  10,  12);

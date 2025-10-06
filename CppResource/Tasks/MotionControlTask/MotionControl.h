@@ -7,17 +7,42 @@
 #include "DM4310.h"
 #include "DeltaPID.h"
 #include "DBus.h"
-
-#ifdef _
-#undef _
-#endif
 #include "boost/sml.hpp"
-
 
 namespace fsm = boost::sml;
 using namespace Device;
 using namespace Component;
 
+namespace MotionParameter{
+    static float constexpr T_SAMPLE = 0.001f; //1ms
+
+    static float constexpr CHASSIS_GEAR_RATE = 1.f;
+    static float constexpr CHASSIS_K_CHX = 1.5f;
+    static float constexpr CHASSIS_K_CHY = 1.5f;
+    static float constexpr CHASSIS_K_OMEGA = 2.0f;
+
+    static float constexpr CHASSIS_FOLLOW_OMEGA = 800.f;
+    static float constexpr CHASSIS_FOLLOW_DES = 0.3; //rad
+
+
+    static float constexpr GIMBAL_YAW_KD = .42f;
+    static float constexpr GIMBAL_YAW_KP = 12.f;
+    static float constexpr GIMBAL_PITCH_KP = 12.f;
+    static float constexpr GIMBAL_PITCH_KD = 2.f;
+
+
+    static float constexpr GIMBAL_MOVE_SPEED = 7.2f; //云台运动参考速度
+    static float constexpr GIMBAL_RAD_VEL = .5f; //匀速运动区间
+    static float constexpr GIMBAL_RAD_POS = 0.3f; //位置控区间
+
+    static float constexpr GIMBAL_K_CH_PITH = 1/1500.f;
+    static float constexpr GIMBAL_K_OMEGA_FORWARD = 2.58f/900.f;
+    static float constexpr GIMBAL_K_LEAD_OMEGA = 2.66f/900.f;
+
+    static float constexpr AUTOROTATE_MAX_OMEGA = 2400.f;
+    static float constexpr AUTOROTATE_ANGLE_BIAS = -0.3f; //rad
+
+}
 
 namespace ChassisControl{
 
@@ -39,13 +64,12 @@ namespace ChassisControl{
 
 namespace GimbalControl{
 
-    static float constexpr YawZero = 0.23013f;
     static float constexpr PI = 3.141592653f;
     static float constexpr YawGearRate = 0.7;
     static float constexpr PithGearRate = 1.f;
 
+    extern float YawZero;
     extern DM4310 YawMotor;
-    extern DM4310 PithMotor;
 
     union AxisState{
         struct {
@@ -64,68 +88,6 @@ namespace GimbalControl{
     void setPithRelative(AxisState target_s);
 }
 
-
-namespace MotionFSM{
-
-    struct StateLoopArg{
-        ChassisControl::MoveState ChassisSta;
-        GimbalControl::AxisState YawSta;
-        GimbalControl::AxisState PithSta;
-    };
-
-    using StateHandler = StateLoopArg(*)(const volatile DBus::RCState*, INS_Device&, const StateLoopArg&);
-
-    // 各 Loop 函数需统一 StateHandler 签名
-    StateLoopArg IdleLoop(const volatile DBus::RCState*, INS_Device&, const StateLoopArg&);
-    StateLoopArg ChassisLeadLoop(const volatile DBus::RCState*, INS_Device&, const StateLoopArg&);
-    StateLoopArg GimbalLeadLoop(const volatile DBus::RCState*, INS_Device&, const StateLoopArg&);
-    StateLoopArg AutoAimLoop(const volatile DBus::RCState*, INS_Device&, const StateLoopArg&);
-    StateLoopArg AutoRotateLoop(const volatile DBus::RCState*, INS_Device&, const StateLoopArg&);
-
-
-    inline StateHandler CurrentHandler = IdleLoop;
-    constexpr StateLoopArg DefaultStateArg = {
-            {{0,0,0}},
-            {{0,0}},
-            {{0,0}}
-    };
-
-    struct Flag{
-        bool IdleNI,ChassisLeadNI,GimbalLeadNI,AutoAimNI,AutoRotateNI;
-    };
-    volatile inline Flag InitFlag = {true,false,false,false,false};
-
-
-    //状态定义
-    struct Init{};
-    struct Idle{};
-    struct ChassisLead{};
-    struct GimbalLead{};
-    struct AutoAim{};
-    struct AutoRotate{};
-
-    //事件定义
-    struct IntoIdle{};
-    struct IntoChassisLead{};
-    struct IntoGimbalLead{};
-    struct IntoAutoAim{};
-    struct IntoAutoRotate{};
-
-    struct motionTransition{
-        auto operator()() const{
-            using namespace boost::sml;
-            return make_transition_table(
-                    *state<Idle> + event<IntoChassisLead> / []{ CurrentHandler = ChassisLeadLoop;InitFlag.ChassisLeadNI = true;} = state<ChassisLead>,
-
-                    state<_> + event<IntoChassisLead> / []{ CurrentHandler = ChassisLeadLoop;InitFlag.ChassisLeadNI = true;} = state<ChassisLead>,
-                    state<_> + event<IntoGimbalLead> / []{ CurrentHandler = GimbalLeadLoop;InitFlag.GimbalLeadNI = true;} = state<GimbalLead>,
-                    state<_> + event<IntoAutoAim> / []{ CurrentHandler = AutoAimLoop;InitFlag.AutoAimNI = true;} = state<AutoAim>,
-                    state<_> + event<IntoAutoRotate> / []{ CurrentHandler = AutoRotateLoop;InitFlag.AutoRotateNI = true;} = state<AutoRotate>,
-                    state<_> + event<IntoIdle> / []{ CurrentHandler = IdleLoop;InitFlag.IdleNI = true;} = state<Idle>
-            );
-        }
-    };
-}
 
 
 #endif //F407_RM_TMPLATE_HAL_MOTIONCONTROL_H
