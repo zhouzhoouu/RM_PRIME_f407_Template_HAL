@@ -8,9 +8,10 @@ Referee &Referee::getInstance(){
 
 void Referee::init() {
     DataFifo.clear();
+    RefereeTuple = {};
 }
 
-uint32_t Referee::PushData(uint8_t* data, uint32_t len){
+uint32_t Referee::pushData(uint8_t* data, uint32_t len){
 
     if (DataFifo.available()<len) {
         len = DataFifo.available();
@@ -21,4 +22,17 @@ uint32_t Referee::PushData(uint8_t* data, uint32_t len){
     }
 
     return len;
+}
+
+void Referee::packetWrite(uint16_t ID, uint8_t* data, uint16_t len){
+    packetWriteTemplate(ID, data, len, RefereeTuple);
+}
+
+void Referee::ProcessData(){
+    while (DataFifo.empty() == false){
+        uint8_t pack_byte = DataFifo.out;
+        unpackStep(RefereeTuple, byte);
+
+        DataFifo.pop();
+    }
 }

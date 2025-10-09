@@ -39,9 +39,6 @@ namespace MotionFSM{
             true}
             ;
 
-    static float Abs_deg_recode;
-
-
     //状态定义
     struct Init{};
     struct Idle{};

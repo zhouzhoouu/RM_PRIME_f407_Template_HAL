@@ -4,6 +4,7 @@
 using namespace MotionFSM;
 using namespace MotionParameter;
 
+static float Abs_deg_recode = 0;
 StateLoopArg MotionFSM::GimbalLeadLoop(const volatile DBus::RCState* RCsta, INS_Device& hINS, const StateLoopArg& cur_sta){
 
     if(InitFlag.GimbalLeadNI){
