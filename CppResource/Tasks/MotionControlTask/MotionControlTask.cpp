@@ -3,7 +3,7 @@
 
 using namespace MotionFSM;
 
-DJiMotorGroup m3508Group_frib(&hcan2, 0x205, 0x1ff);
+DJiMotorGroup m3508Group_frib(&hcan2, 0x201, 0x200);
 DJiMotorGroup m3508Group_triger(&hcan1, 0x205, 0x1ff);
 
 
@@ -20,6 +20,10 @@ void MotionControlTask(void const * argument){
     };
     osDelay(200);
     while (1){
+
+        short curr[] = {hDbus.getState()->ch[4],
+                        hDbus.getState()->ch[4],0, 0};
+        m3508Group_frib.setMotorCurrent(curr);
 
         const volatile DBus::RCState* sta = hDbus.getState();
 
