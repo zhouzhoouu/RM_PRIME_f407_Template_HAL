@@ -29,5 +29,10 @@ void Referee::packetWrite(uint16_t ID, uint8_t* data, uint16_t len){
 }
 
 void Referee::ProcessData(){
-    if (DataFifo.available()>0) {DataFifo.push(0);}
+    while (DataFifo.empty() == false){
+        uint8_t pack_byte = DataFifo.out;
+        unpackStep(RefereeTuple, byte);
+
+        DataFifo.pop();
+    }
 }

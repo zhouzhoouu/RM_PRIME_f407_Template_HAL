@@ -296,29 +296,29 @@ namespace RefereeType
     } __attribute__ ((packed));
 
     using RefereeTupleType =  std::tuple<
-                RefereeType::GameState,
-                RefereeType::GameResult,
-                RefereeType::GameRobotHP,
-                RefereeType::EventData,
-                RefereeType::SupplyProjectileAction,
-                RefereeType::RefereeWarning,
-                RefereeType::GameRobotState,
-                RefereeType::PowerHeatData,
-                RefereeType::GameRobotPos,
-                RefereeType::BuffMusk,
-                RefereeType::AerialRobotEnergy,
-                RefereeType::RobotHurt,
-                RefereeType::ShootData,
-                RefereeType::BulletRemaining,
-                RefereeType::RFIDStatus,
-                RefereeType::GroundRobotPosition,
-                RefereeType::RadarMarkData,
-                RefereeType::SentryInfo,
-                RefereeType::RadarInfo,
-                RefereeType::StudentInteractiveData,
-                RefereeType::MapData,
-                RefereeType::CustomClientData,
-                RefereeType::CustomInfo
+                GameState,
+                GameResult,
+                GameRobotHP,
+                EventData,
+                SupplyProjectileAction,
+                RefereeWarning,
+                GameRobotState,
+                PowerHeatData,
+                GameRobotPos,
+                BuffMusk,
+                AerialRobotEnergy,
+                RobotHurt,
+                ShootData,
+                BulletRemaining,
+                RFIDStatus,
+                GroundRobotPosition,
+                RadarMarkData,
+                SentryInfo,
+                RadarInfo,
+                StudentInteractiveData,
+                MapData,
+                CustomClientData,
+                CustomInfo
             >;
 
 
@@ -326,7 +326,7 @@ namespace RefereeType
     void packetWriteTemplate(uint16_t ID, uint8_t* data, uint16_t len, RefereeTupleType& tuple) {
         if constexpr (I < std::tuple_size_v<RefereeTupleType>) {
             using T = std::tuple_element_t<I, RefereeTupleType>;
-            if constexpr (std::is_base_of<RefereeCMD<T::CMD_ID>, T>::value) {
+            if constexpr (std::is_base_of_v<RefereeCMD<T::CMD_ID>, T>) {
                 if (T::CMD_ID == ID) {
                     std::memcpy(&std::get<I>(tuple), data, std::min<uint16_t>(len, sizeof(T)));
                     return;
