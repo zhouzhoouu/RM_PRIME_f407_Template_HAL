@@ -29,10 +29,19 @@ void Referee::packetWrite(uint16_t ID, uint8_t* data, uint16_t len){
 }
 
 void Referee::ProcessData(){
-    while (DataFifo.empty() == false){
-        uint8_t pack_byte = DataFifo.out;
-        unpackStep(RefereeTuple, byte);
 
+    using namespace boost::sml;
+
+    while (!DataFifo.empty()){
+
+        uint8_t pack_byte = DataFifo.front();
+        depackFSM.process_event(RefereeFSM::unitData{pack_byte});
+
+        if(RefereeFSM::CRC16_Pass{}(depackCtx)){
+            uint16_t cmd_id = (depackCtx.protocol_packet[6]<<8) | depackCtx.protocol_packet[5];
+            packetWrite(cmd_id, &depackCtx.protocol_packet[7], depackCtx.data_len);
+
+        }
         DataFifo.pop();
     }
 }

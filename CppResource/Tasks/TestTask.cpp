@@ -47,12 +47,12 @@ uint32_t MIDI_Seq[][2] = {
 
 };
 
-void TestTask(void const * argument){
+[[noreturn]] void TestTask(void const * argument){
 
     Buzzer &hBuzzer = Buzzer::getInstance();
 
     hBuzzer.on();
-    for (auto &note : MIDI_Seq_DJI){
+    for (auto &note : MIDI_Seq){
         hBuzzer.setFrequency(Buzzer::ToneList[note[0]]);
         osDelay(note[1]*5);
     }
@@ -68,7 +68,7 @@ void TestTask(void const * argument){
     //hBuzzer.toggle();
 
 
-    while (1){
+    while (true){
 
 
         //hBuzzer.toggle();

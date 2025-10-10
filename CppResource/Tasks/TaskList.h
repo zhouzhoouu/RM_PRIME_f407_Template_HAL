@@ -9,10 +9,12 @@ extern "C" {
 #endif
 
 
-void TestTask(void const * argument);
-void DebugTask(void const * argument);
-void INS_Task(void const * argument);
-void MotionControlTask(void const * argument);
+[[noreturn]] void TestTask(void const * argument);
+[[noreturn]] void DebugTask(void const * argument);
+[[noreturn]] void INS_Task(void const * argument);
+[[noreturn]] void MotionControlTask(void const * argument);
+[[noreturn]] void RefereeProcessTask(void const * argument);
+[[noreturn]] void ShootTask(void const * argument);
 
 #ifdef __cplusplus
 }

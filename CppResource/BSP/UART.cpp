@@ -1,6 +1,7 @@
 #include "UART.h"
 #include "main_cpp.h"
 #include "DBus.h"
+#include "Referee.h"
 
 using namespace BSP;
 
@@ -86,8 +87,6 @@ static void UART6_Init(uint8_t *rx1_buf, uint8_t *rx2_buf, uint16_t dma_buf_num)
     hdma_usart6_tx.Instance->PAR = (uint32_t) & (USART6->DR);//串口发送寄存器地址
 }
 
-
-
 void BSP::UART_UserInit(){
 
     Device::DBus::getInstance(); //初始化DBus
@@ -111,7 +110,7 @@ extern "C" void USART3_IDEL_IRQHandler(UART_HandleTypeDef *huart){
     hdma_usart3_rx.Instance->CR ^= DMA_SxCR_CT; //反转缓冲区
     __HAL_DMA_ENABLE(&hdma_usart3_rx);//使能DMA
 
-    if(this_time_rx_len == DBUS_FRAME_LENGTH)
+    if(this_time_rx_len == Device::DBus::DBUS_FRAME_LENGTH)
     {
         Device::DBus &hdbus = Device::DBus::getInstance();
         hdbus.receiveMessage(UART3_DMA_BUF[target_index]);//解码数据
@@ -133,9 +132,10 @@ extern "C" void USART6_IDEL_IRQHandler(UART_HandleTypeDef *huart){
     hdma_usart6_rx.Instance->CR ^= DMA_SxCR_CT; //反转缓冲区
     __HAL_DMA_ENABLE(&hdma_usart6_rx);//使能DMA
 
-    if(this_time_rx_len == DBUS_FRAME_LENGTH)
+    if(this_time_rx_len >= Device::Referee::MIN_FRAME_SIZE)
     {
-
+        Device::Referee &href = Device::Referee::getInstance();
+        href.pushData(UART6_DMA_BUF[target_index], this_time_rx_len);//存入FIFO
     }
 
 }

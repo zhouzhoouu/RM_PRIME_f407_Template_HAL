@@ -3,11 +3,7 @@
 
 using namespace MotionFSM;
 
-DJiMotorGroup m3508Group_frib(&hcan2, 0x201, 0x200);
-DJiMotorGroup m3508Group_triger(&hcan1, 0x205, 0x1ff);
-
-
-void MotionControlTask(void const * argument){
+[[noreturn]] void MotionControlTask(void const * argument){
 
     DBus &hDbus = DBus::getInstance();
     INS_Device &hINS = INS_Device::getInstance();
@@ -19,11 +15,8 @@ void MotionControlTask(void const * argument){
         GimbalControl::getYawState(),
         GimbalControl::getPithState()
     };
-    while (1){
 
-        short curr[] = {hDbus.getState()->ch[4],
-                        hDbus.getState()->ch[4],0, 0};
-        m3508Group_frib.setMotorCurrent(curr);
+    while (true){
 
         const volatile DBus::RCState* sta = hDbus.getState();
 
@@ -63,14 +56,13 @@ void MotionControlTask(void const * argument){
 }
 
 
-
-void DebugTask(void const * argument){
+[[noreturn]] void DebugTask(void const * argument){
 
     DBus &hDbus = DBus::getInstance();
     INS_Device &hINS = INS_Device::getInstance();
 
 
-    while (1){
+    while (true){
 
         const volatile DBus::RCState* sta = hDbus.getState();
 

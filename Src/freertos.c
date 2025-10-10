@@ -52,6 +52,8 @@ osThreadId TestHandle;
 osThreadId DebugHandle;
 osThreadId INSHandle;
 osThreadId MotionControlHandle;
+osThreadId RefereeProcessHandle;
+osThreadId ShootHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -59,10 +61,30 @@ osThreadId MotionControlHandle;
 /* USER CODE END FunctionPrototypes */
 
 void Default_task(void const * argument);
+
+[[noreturn]]
+
 extern void TestTask(void const * argument);
+
+[[noreturn]]
+
 extern void DebugTask(void const * argument);
+
+[[noreturn]]
+
 extern void INS_Task(void const * argument);
+
+[[noreturn]]
+
 extern void MotionControlTask(void const * argument);
+
+[[noreturn]]
+
+extern void RefereeProcessTask(void const * argument);
+
+[[noreturn]]
+
+extern void ShootTask(void const * argument);
 
 extern void MX_USB_DEVICE_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -145,6 +167,14 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of MotionControl */
   osThreadDef(MotionControl, MotionControlTask, osPriorityNormal, 0, 512);
   MotionControlHandle = osThreadCreate(osThread(MotionControl), NULL);
+
+  /* definition and creation of RefereeProcess */
+  osThreadDef(RefereeProcess, RefereeProcessTask, osPriorityNormal, 0, 512);
+  RefereeProcessHandle = osThreadCreate(osThread(RefereeProcess), NULL);
+
+  /* definition and creation of Shoot */
+  osThreadDef(Shoot, ShootTask, osPriorityNormal, 0, 256);
+  ShootHandle = osThreadCreate(osThread(Shoot), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */

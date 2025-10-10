@@ -15,7 +15,7 @@ static TickType_t INS_LastWakeTime;
 BMI088::Measurement tmp;
 
 
-void INS_Task(void const * argument){
+[[noreturn]] void INS_Task(void const * argument){
 
     INS_LastWakeTime = xTaskGetTickCount();
     INS_Device::Vector3 acc_raw{}, gyro_raw{}, meg_raw{0.f ,0.f,0.f};
@@ -26,7 +26,7 @@ void INS_Task(void const * argument){
     INS_Device &hINS = INS_Device::getInstance();
     hINS.Init();
 
-    while (1){
+    while (true){
 
         hIMU.GetMeasurement(acc_raw.data, gyro_raw.data, &temperature);
         hINS.Insert(acc_raw, gyro_raw, meg_raw, dt);

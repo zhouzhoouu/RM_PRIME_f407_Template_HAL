@@ -3,13 +3,15 @@
 
 #include "main_cpp.h"
 
-#define DBUS_FRAME_LENGTH 18
-#define RC_CH_VALUE_OFFSET 1024
-
 namespace Device {
+
 
     class DBus {
     public:
+
+        static constexpr uint32_t DBUS_FRAME_LENGTH = 18;
+        static constexpr uint32_t RC_CH_VALUE_OFFSET = 1024;
+
         struct RCState {
             int16_t ch[5];       // -660~660
             uint8_t s[2];       // 1 or 3
