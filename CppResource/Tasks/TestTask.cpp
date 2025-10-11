@@ -52,7 +52,7 @@ uint32_t MIDI_Seq[][2] = {
     Buzzer &hBuzzer = Buzzer::getInstance();
 
     hBuzzer.on();
-    for (auto &note : MIDI_Seq){
+    for (auto &note : MIDI_Seq_DJI){
         hBuzzer.setFrequency(Buzzer::ToneList[note[0]]);
         osDelay(note[1]*5);
     }

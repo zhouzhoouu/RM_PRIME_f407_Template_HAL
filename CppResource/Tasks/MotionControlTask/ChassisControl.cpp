@@ -1,4 +1,7 @@
 #include "MotionControl.h"
+#include "AHRS_middleware.h"
+
+using namespace MotionParameter;
 
 namespace ChassisControl{
 
@@ -44,22 +47,43 @@ namespace ChassisControl{
     // omega=900时，实际转动速度约1rad/s(云台跟随)
     MoveState setMove(MoveState target_state){
 
-        short tmp_cur[] = {0, 0, 0, 0};
 
-        float motor_v_target[4] = {};
-        MotionCalOmnidForward(target_state, motor_v_target);
-
+        MoveState measure_state;
         float motor_speed[4] = {0,0,0,0};
         for (int i = 0; i < 4; ++i) {
             DJiMotorGroup::MotorState bf = m3508Group_Chassis.getMotorState(i);
             motor_speed[i] = bf.speed;
+        }
+        MotionCalOmnidBackward(motor_speed, &measure_state);
+
+        MoveState dv{{target_state.vx - measure_state.vx,
+                   target_state.vy - measure_state.vy,
+                   target_state.omega - measure_state.omega}};
+
+        float vsq = dv.vx * dv.vx + dv.vy * dv.vy;
+        float k_ref = CHASSIS_MAX_ACCEL*T_SAMPLE*AHRS_invSqrt(vsq);
+        float k_omega_ref = CHASSIS_MAX_ALPHA*T_SAMPLE / (dv.omega > 0 ? dv.omega : -dv.omega + 0.0001f);
+        if (k_ref < 1.0f ) {
+            dv.vx *= k_ref;
+            dv.vy *= k_ref;
+        }
+        if(k_omega_ref < 1.0f){
+            dv.omega *= k_omega_ref;
+        }
+        MoveState target_state_accel_limit{{measure_state.vx + dv.vx,
+                                 measure_state.vy + dv.vy,
+                                 measure_state.omega + dv.omega}};
+
+        float motor_v_target[4] = {};
+        MotionCalOmnidForward(target_state_accel_limit, motor_v_target);
+
+        short tmp_cur[] = {0, 0, 0, 0};
+        for (int i = 0; i < 4; ++i) {
             Speed_PID[i].Run(motor_v_target[i], motor_speed[i]);
             tmp_cur[i] = (short)Speed_PID[i].Output;
-//            tmp_cur[i] = 600;
+            //tmp_cur[i] = 600;
         }
 
-        MoveState measure_state = {};
-        MotionCalOmnidBackward(motor_speed, &measure_state);
         m3508Group_Chassis.setMotorCurrent(tmp_cur);
 
         return measure_state;

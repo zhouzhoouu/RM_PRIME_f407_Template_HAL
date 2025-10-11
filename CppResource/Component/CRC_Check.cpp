@@ -62,7 +62,7 @@ uint8_t CRC_Check::CRC8_Cla(uint8_t* data, uint32_t len){
     uint8_t CRC8_ref = CRC8_INIT;
     uint8_t index = 0;
 
-    for (int i = 0; i < len; ++i) {
+    for (uint32_t i = 0; i < len; ++i) {
         index = CRC8_ref^data[i];
         CRC8_ref = CRC8_table[index];
     }
@@ -74,7 +74,7 @@ uint16_t CRC_Check::CRC16_Cla(uint8_t* data, uint32_t len){
     uint16_t CRC16_ref = CRC16_INIT;
     uint16_t index = 0;
 
-    for (int i = 0; i < len; ++i) {
+    for (uint32_t i = 0; i < len; ++i) {
 
         index = ((uint16_t)(CRC16_ref) ^ (uint16_t)data[i]) & 0x00ff;
         CRC16_ref = ((uint16_t)(CRC16_ref) >> 8) ^ CRC16_table[index];

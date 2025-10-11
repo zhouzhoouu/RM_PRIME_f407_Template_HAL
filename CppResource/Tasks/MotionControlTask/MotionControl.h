@@ -16,10 +16,11 @@ using namespace Component;
 namespace MotionParameter{
     static float constexpr T_SAMPLE = 0.001f; //1ms
 
-    static float constexpr CHASSIS_GEAR_RATE = 1.f;
-    static float constexpr CHASSIS_K_CHX = 1.5f;
-    static float constexpr CHASSIS_K_CHY = 1.5f;
-    static float constexpr CHASSIS_K_OMEGA = 2.0f;
+    static float constexpr CHASSIS_K_CHX = 3.5f;
+    static float constexpr CHASSIS_K_CHY = 3.5f;
+    static float constexpr CHASSIS_K_OMEGA = 3.0f;
+    static float constexpr CHASSIS_MAX_ACCEL = 500000.f;
+    static float constexpr CHASSIS_MAX_ALPHA = 500000.f;
 
     static float constexpr CHASSIS_FOLLOW_OMEGA = 800.f;
     static float constexpr CHASSIS_FOLLOW_DES = 0.3; //rad

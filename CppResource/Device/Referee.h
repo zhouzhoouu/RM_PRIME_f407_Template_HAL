@@ -22,7 +22,18 @@ namespace RefereeFSM{
     struct depackContext{
         uint16_t data_len = 0;
         uint16_t data_index = 0;
-        uint8_t  protocol_packet[FRAME_MAX_SIZE]{};
+        union {
+            struct {
+                uint8_t sof;
+                uint16_t data_length;
+                uint8_t seq;
+                uint8_t crc8;
+                uint16_t cmd_id;
+                uint8_t data[FRAME_MAX_SIZE - HEADER_CRC_CMDID_LEN];
+                uint16_t crc16;
+            } __attribute__ ((packed));
+            uint8_t  protocol_packet[FRAME_MAX_SIZE]{};
+        };
     };
 
     struct unitData {uint8_t byte;};
@@ -41,7 +52,11 @@ namespace RefereeFSM{
     };
 
     struct CRC16_Pass {
-        bool operator()(depackContext& context) const {
+        bool operator()(depackContext& context, const unitData& data) const {
+
+            if(context.data_index < FRAME_MAX_SIZE)
+                context.protocol_packet[context.data_index++] = data.byte;
+
             if(context.data_len + HEADER_CRC_CMDID_LEN == context.data_index)
                 return Component::CRC_Check::CRC16_Verify(context.protocol_packet, context.data_index);
             return false;
@@ -83,11 +98,7 @@ namespace RefereeFSM{
                     "HEADER_CRC8"_s + event<unitData> [CRC8_Pass{}] = "DATA_CRC16"_s,
                     "HEADER_CRC8"_s + event<unitData>  = "HEAD_SOF"_s,
 
-                    "DATA_CRC16"_s + event<unitData> /
-                    [](depackContext& context, const unitData& data){
-                        if(context.data_index < FRAME_MAX_SIZE)
-                        context.protocol_packet[context.data_index++] = data.byte;
-                    }
+                    "DATA_CRC16"_s + event<unitData> [CRC16_Pass{}] = state<PackChecked>
 
             );
         }
