@@ -3,6 +3,7 @@
 
 static BSP::InterfaceCAN *CANDeviceList[MAX_CAN_DEVICES];
 static uint8_t CANDeviceCount;
+static bool CAN_start[] = {false, false};
 
 static void CAN_config_init(){
     CAN_FilterTypeDef can_filter_st;
@@ -35,6 +36,9 @@ namespace BSP{
     void CAN_UserInit(){
 
         CAN_config_init();
+
+        while (CAN_start[0] == false || CAN_start[1] == false) __NOP();
+
         HAL_Delay(100);
         for (int i = 0; i < CANDeviceCount; ++i) {
             CANDeviceList[i]->init();
@@ -56,6 +60,7 @@ namespace BSP{
     }
 
     bool InterfaceCAN::sendMessage(uint8_t *data, uint8_t &len){
+
         if(len > 8) len = 8; // CAN数据长度最大为8字节
         CAN_TxHeaderTypeDef TxHeader;
         TxHeader.StdId = TxStdId;
@@ -85,6 +90,13 @@ namespace BSP{
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
+
+    if(hcan == &hcan1){
+        CAN_start[0] = true;
+    }
+    else if(hcan == &hcan2){
+        CAN_start[1] = true;
+    }
 
     CAN_RxHeaderTypeDef tmp_header;
     uint8_t tmp_data[8];

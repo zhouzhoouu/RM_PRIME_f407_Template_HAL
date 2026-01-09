@@ -110,6 +110,20 @@ uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
 
 /* USER CODE BEGIN EXPORTED_FUNCTIONS */
 
+/**
+ * @brief 返回环形缓冲区中可读字节数
+ * @retval 可读字节数
+ */
+uint32_t CDC_Available_FS(void);
+
+/**
+ * @brief 从环形缓冲区读取数据
+ * @param out 目标缓冲
+ * @param len 要读取的最大字节数
+ * @return 实际读取的字节数
+ */
+uint32_t CDC_Read_FS(uint8_t *out, uint32_t len);
+
 /* USER CODE END EXPORTED_FUNCTIONS */
 
 /**

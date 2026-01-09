@@ -3,6 +3,8 @@
 
 #include "TaskList.h"
 #include "DJiMotorGroup.h"
+#include "SupCap.h"
+#include "Referee.h"
 #include "INS_Device.h"
 #include "DM4310.h"
 #include "DeltaPID.h"
@@ -36,7 +38,7 @@ namespace MotionParameter{
     static float constexpr GIMBAL_RAD_VEL = .5f; //匀速运动区间
     static float constexpr GIMBAL_RAD_POS = 0.3f; //位置控区间
 
-    static float constexpr GIMBAL_K_CH_PITH = 1/1500.f;
+    static float constexpr GIMBAL_K_CH_PITH = 1/1000.f;
     static float constexpr GIMBAL_K_OMEGA_FORWARD = 2.58f/900.f;
     static float constexpr GIMBAL_K_LEAD_OMEGA = 2.66f/900.f;
 

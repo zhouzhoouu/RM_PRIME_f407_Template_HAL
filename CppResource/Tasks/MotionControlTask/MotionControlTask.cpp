@@ -3,6 +3,8 @@
 
 using namespace MotionFSM;
 
+
+
 [[noreturn]] void MotionControlTask(void const * argument){
 
     DBus &hDbus = DBus::getInstance();
@@ -56,25 +58,26 @@ using namespace MotionFSM;
 }
 
 
+SupCap supCap(&hcan1);
 [[noreturn]] void DebugTask(void const * argument){
 
     DBus &hDbus = DBus::getInstance();
     INS_Device &hINS = INS_Device::getInstance();
+    Referee &hreferee = Referee::getInstance();
+    using namespace RefereeType;
 
 
     while (true){
 
         const volatile DBus::RCState* sta = hDbus.getState();
+        supCap.SetRestEng(hreferee.getRefereeInfo<RefereeType::PowerHeatData>().chassis_power_buffer);
 
         float pack[5];
 
-
-//        pack[0] = sta->s[0];
-//        pack[1] = sta->s[1];
-
-        pack[0] = hINS.getAngle().yaw;
-        pack[1] = GimbalControl::angleMod(GimbalControl::getYawState().pos);
-        pack[2] = GimbalControl::getYawState().omega;
+        pack[0] = hreferee.getRefereeInfo<PowerHeatData>().reserved;
+        //pack[1] = hreferee.getRefereeInfo<PowerHeatData>().chassis_power_buffer;
+        pack[1] = supCap.getPower();
+        pack[2] = hreferee.getRefereeInfo<PowerHeatData>().reserved - supCap.getPower();
 //        pack[2] = hINS.getAccel().x;
 //        pack[3] = hINS.getAccel().y;
 

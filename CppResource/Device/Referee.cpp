@@ -40,7 +40,6 @@ void Referee::ProcessData(){
         if(depackFSM.is(state<RefereeFSM::PackChecked>)){
             uint16_t cmd_id = (depackCtx.protocol_packet[6]<<8) | depackCtx.protocol_packet[5];
             packetWrite(cmd_id, &depackCtx.protocol_packet[7], depackCtx.data_len);
-
         }
 
         DataFifo.pop();

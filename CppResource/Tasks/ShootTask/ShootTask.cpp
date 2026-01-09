@@ -1,11 +1,8 @@
 #include "ShootTask.h"
 
-using namespace Device;
-
-DJiMotorGroup m3508Group_frib(&hcan2, 0x201, 0x200);
-DJiMotorGroup m3508Group_triger(&hcan1, 0x205, 0x1ff);
-
-
+using namespace ShootFSM;
+using namespace FribControl;
+using namespace TriggerControl;
 
 [[noreturn]] void ShootTask(void const * argument){
 
@@ -13,9 +10,33 @@ DJiMotorGroup m3508Group_triger(&hcan1, 0x205, 0x1ff);
 
     while (true){
 
-        short curr[] = {hDbus.getState()->ch[4],
-                        hDbus.getState()->ch[4],0, 0};
-        m3508Group_frib.setMotorCurrent(curr);
+        short tin = hDbus.getState()->ch[4];
+        tin = -tin;
+
+        ShootFSMLoop(tin);
+        bool isFribOpened = getIsFribOpened();
+        bool isZeroCross = getIsZeroCross();
+
+        float triger_speed, frib_speed;
+        if(isFribOpened) {
+            if(tin < 0) tin = 0;
+
+            if(isZeroCross)
+                triger_speed = 15.f*tin;
+            else
+                triger_speed = 0.f;
+
+            frib_speed = 8000.f;
+        }
+        else{
+            triger_speed = 0.f;
+            frib_speed = 0.f;
+        }
+
+        setFribSpeed(frib_speed);
+        setTrigSpeed(triger_speed);
+
+
 
         osDelay(1);
 

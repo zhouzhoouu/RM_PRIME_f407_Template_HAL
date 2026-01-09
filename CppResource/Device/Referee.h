@@ -47,6 +47,7 @@ namespace RefereeFSM{
         bool operator()(depackContext& context, const unitData& data) const {
             context.protocol_packet[4] = data.byte;
             context.data_index = 5;
+            //return true;
             return Component::CRC_Check::CRC8_Verify(context.protocol_packet, 5);
         }
     };
@@ -59,6 +60,7 @@ namespace RefereeFSM{
 
             if(context.data_len + HEADER_CRC_CMDID_LEN == context.data_index)
                 return Component::CRC_Check::CRC16_Verify(context.protocol_packet, context.data_index);
+                //return true;
             return false;
         }
     };
@@ -76,6 +78,7 @@ namespace RefereeFSM{
                     "FRAME_SEQ"_s + event<unitData> [isHead{}] = "LENGTH_LOW"_s,
                     "HEADER_CRC8"_s + event<unitData> [isHead{}] = "LENGTH_LOW"_s,
                     "DATA_CRC16"_s + event<unitData> [isHead{}] = "LENGTH_LOW"_s,
+                    state<PackChecked> + event<unitData> [isHead{}] = "LENGTH_LOW"_s,
 
                     "LENGTH_LOW"_s + event<unitData> /
                     [](depackContext& context, const unitData& data){

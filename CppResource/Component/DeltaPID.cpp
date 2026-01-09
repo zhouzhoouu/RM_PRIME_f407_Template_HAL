@@ -11,6 +11,7 @@ namespace Component{
     maxOut(max),
     minOut(min)
     {
+        Output = 0;
         Reset();
     }
 

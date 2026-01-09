@@ -15,6 +15,7 @@ extern "C" {
 [[noreturn]] void MotionControlTask(void const * argument);
 [[noreturn]] void RefereeProcessTask(void const * argument);
 [[noreturn]] void ShootTask(void const * argument);
+[[noreturn]] void NanoTask(void const * argument);
 
 #ifdef __cplusplus
 }

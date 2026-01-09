@@ -42,7 +42,6 @@ namespace GimbalControl{
 
         //符号判断
         if(dpos < -0.f) dir = -1;
-
         //线性插值（可改成其他插值函数）
         if(dpos * (float)dir > GIMBAL_RAD_VEL){
             alpha = 1;

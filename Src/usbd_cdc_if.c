@@ -94,6 +94,24 @@ uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
 uint8_t UserTxBufferFS[APP_TX_DATA_SIZE];
 
 /* USER CODE BEGIN PRIVATE_VARIABLES */
+/* 环形缓冲区用于存放来自 USB 的接收数据 */
+static uint8_t ring_buf[APP_RX_DATA_SIZE];
+static volatile uint32_t ring_wr = 0;
+static volatile uint32_t ring_rd = 0;
+
+/* 内部写入函数（在中断/回调上下文调用） */
+static void ring_write(const uint8_t *data, uint32_t len)
+{
+    for (uint32_t i = 0; i < len; ++i) {
+        uint32_t next = (ring_wr + 1) % APP_RX_DATA_SIZE;
+        if (next == ring_rd) {
+            /* 缓冲已满，丢弃后续字节 */
+            break;
+        }
+        ring_buf[ring_wr] = data[i];
+        ring_wr = next;
+    }
+}
 
 /* USER CODE END PRIVATE_VARIABLES */
 
@@ -261,7 +279,13 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
 static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
 {
   /* USER CODE BEGIN 6 */
-  USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
+  /* 把收到的数据复制到环形缓冲区（先拷贝），然后重新使能底层接收缓冲 */
+  if (Buf != NULL && Len != NULL && *Len > 0) {
+    ring_write(Buf, *Len);
+  }
+
+  /* 重新使能底层接收，使用预分配的 UserRxBufferFS 作为接收缓冲 */
+  USBD_CDC_SetRxBuffer(&hUsbDeviceFS, UserRxBufferFS);
   USBD_CDC_ReceivePacket(&hUsbDeviceFS);
   return (USBD_OK);
   /* USER CODE END 6 */
@@ -316,6 +340,27 @@ static int8_t CDC_TransmitCplt_FS(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
 }
 
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_IMPLEMENTATION */
+
+uint32_t CDC_Available_FS(void)
+{
+    uint32_t wr = ring_wr;
+    uint32_t rd = ring_rd;
+    if (wr >= rd) return wr - rd;
+    return APP_RX_DATA_SIZE - (rd - wr);
+}
+
+uint32_t CDC_Read_FS(uint8_t *out, uint32_t len)
+{
+    if (out == NULL || len == 0) return 0;
+    uint32_t cnt = 0;
+
+    while (cnt < len && ring_rd != ring_wr) {
+        out[cnt++] = ring_buf[ring_rd];
+        ring_rd = (ring_rd + 1) % APP_RX_DATA_SIZE;
+    }
+
+    return cnt;
+}
 
 /* USER CODE END PRIVATE_FUNCTIONS_IMPLEMENTATION */
 

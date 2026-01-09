@@ -119,6 +119,11 @@ extern "C" void USART3_IDEL_IRQHandler(UART_HandleTypeDef *huart){
 }
 
 
+//static uint8_t test_data[] = {
+//        0xa5, 0x10, 0x00, 0x02, 0x8f, 0x2, 0x2, 0x83, 0x5d, 0x96, 0x00,
+//        0x53, 0x8d, 0x6f, 0x40, 0x3c, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
+//        0xc9, 0x4a, 0x00, 0x00
+//};
 
 extern "C" void USART6_IDEL_IRQHandler(UART_HandleTypeDef *huart){
 
@@ -136,6 +141,8 @@ extern "C" void USART6_IDEL_IRQHandler(UART_HandleTypeDef *huart){
     {
         Device::Referee &href = Device::Referee::getInstance();
         href.pushData(UART6_DMA_BUF[target_index], this_time_rx_len);//存入FIFO
+        //test_data[3] = HAL_GetTick()%255;
+        //href.pushData(test_data, 25);
     }
 
 }

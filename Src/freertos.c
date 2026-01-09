@@ -54,6 +54,7 @@ osThreadId INSHandle;
 osThreadId MotionControlHandle;
 osThreadId RefereeProcessHandle;
 osThreadId ShootHandle;
+osThreadId NanoHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -61,30 +62,13 @@ osThreadId ShootHandle;
 /* USER CODE END FunctionPrototypes */
 
 void Default_task(void const * argument);
-
-[[noreturn]]
-
 extern void TestTask(void const * argument);
-
-[[noreturn]]
-
 extern void DebugTask(void const * argument);
-
-[[noreturn]]
-
 extern void INS_Task(void const * argument);
-
-[[noreturn]]
-
 extern void MotionControlTask(void const * argument);
-
-[[noreturn]]
-
 extern void RefereeProcessTask(void const * argument);
-
-[[noreturn]]
-
 extern void ShootTask(void const * argument);
+extern void NanoTask(void const * argument);
 
 extern void MX_USB_DEVICE_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -175,6 +159,10 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of Shoot */
   osThreadDef(Shoot, ShootTask, osPriorityNormal, 0, 256);
   ShootHandle = osThreadCreate(osThread(Shoot), NULL);
+
+  /* definition and creation of Nano */
+  osThreadDef(Nano, NanoTask, osPriorityNormal, 0, 128);
+  NanoHandle = osThreadCreate(osThread(Nano), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
