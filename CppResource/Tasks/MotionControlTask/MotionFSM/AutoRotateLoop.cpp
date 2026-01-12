@@ -33,8 +33,7 @@ StateLoopArg MotionFSM::AutoRotateLoop(const volatile DBus::RCState* RCsta, INS_
 
     float ref_ang = (float) RCsta->ch[1] * GIMBAL_K_CH_PITH;
 
-    auto YawData = GimbalControl::getYawState();
-    float taget_pos = YawData.pos + Abs_deg_recode - hINS.getAngle().yaw;
+    float taget_pos = cur_sta.YawSta.pos + Abs_deg_recode - hINS.getAngle().yaw;
     StateLoopArg rel = {
             target_state,
             {{taget_pos,  -cur_sta.ChassisSta.omega * GIMBAL_K_OMEGA_FORWARD}},

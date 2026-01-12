@@ -8,15 +8,6 @@ NanoMsg &NanoMsg::getInstance(){
     return instance;
 }
 
-
-INS_Device::Vector3 NanoMsg::getControlCmd(){
-    INS_Device::Vector3 rel = {{{0.f, 0.f, 0.f}}};
-    rel.yaw = yaw_Union.Float;
-    rel.pitch = pitch_Union.Float;
-
-    return rel;
-}
-
 uint32_t NanoMsg::pushData(uint8_t* data, uint32_t len){
 
     if (DataFifo.available()<len) {
@@ -30,7 +21,6 @@ uint32_t NanoMsg::pushData(uint8_t* data, uint32_t len){
     return len;
 }
 
-
 void NanoMsg::sendMsg(float yaw, float pitch){
 
     uint8_t sendBuff[13];
@@ -39,7 +29,7 @@ void NanoMsg::sendMsg(float yaw, float pitch){
     sendBuff[1] = 0x21; // 设置地址
     sendBuff[2] = 13;   // 设置帧长
 
-    float data_array[] = {yaw, pitch};
+    float data_array[] = {-yaw, pitch};
 
     for (int j = 0; j < 2; j++)
     {
@@ -57,6 +47,14 @@ void NanoMsg::sendMsg(float yaw, float pitch){
     sendBuff[12] = check;
 
     CDC_Transmit_FS(sendBuff, 13);
+}
+
+INS_Device::Vector3 NanoMsg::getControlCmd(){
+    INS_Device::Vector3 rel = {{{0.f, 0.f, 0.f}}};
+    rel.yaw = -yaw_Union.Float;
+    rel.pitch = pitch_Union.Float;
+
+    return rel;
 }
 
 void NanoMsg::ProcessData(){
@@ -97,5 +95,13 @@ void NanoMsg::ProcessData(){
 
     }
 
+}
 
+void NanoMsg::writeMsg(float yaw, float pitch){
+    tmp_yaw = yaw;
+    tmp_pitch = pitch;
+}
+
+void NanoMsg::sendMsg(){
+    sendMsg(tmp_yaw ,tmp_pitch);
 }

@@ -1,10 +1,11 @@
 #include "MotionControl.h"
+#include "arm_math.h"
 
 using namespace MotionParameter;
 
 namespace GimbalControl{
 
-    DM4310 YawMotor(&hcan1, 1);
+    DM4310 YawMotor(&hcan1, 1, PI*10.f, 30.f, 10.f);
     DM4310 PithMotor(&hcan2, 2);
 
     float YawZero = 0.f;
@@ -33,6 +34,15 @@ namespace GimbalControl{
 
     void setYawRelative(AxisState target_s){
 
+        //角速度限制
+        float current_omega = getYawState().omega;
+        float delta_omega = target_s.omega - current_omega;
+        float max_delta_omega = GIMBAL_MAX_ALPHA*T_SAMPLE;
+        if(delta_omega > max_delta_omega) delta_omega = max_delta_omega;
+        if(delta_omega < -max_delta_omega) delta_omega = -max_delta_omega;
+        target_s.omega = current_omega + delta_omega;
+
+        //位置限制与插值
         float  current_pos = angleMod(getYawState().pos);
         float des_pos = angleMod(target_s.pos);
 
@@ -54,7 +64,7 @@ namespace GimbalControl{
         }
 
         target_s.pos = current_pos * alpha + des_pos * (1.f - alpha);
-        target_s.omega = (alpha * (GIMBAL_MOVE_SPEED * (float)dir) + (1.f - alpha)* target_s.omega);
+        float kp_omega = alpha * (GIMBAL_MOVE_SPEED * (float)dir);
 
         float angle_err = angleMod(target_s.pos - current_pos);
         //限制幅度
@@ -65,12 +75,34 @@ namespace GimbalControl{
         if(target_s.omega > 20.f) target_s.omega = 20.f;
         if(target_s.omega < -20.f) target_s.omega = -20.f;
 
-        YawMotor.setMITcmd(0,target_s.omega * (1.f/YawGearRate), 0, GIMBAL_YAW_KD, except_t);
+        YawMotor.setMITcmd(0,(target_s.omega+kp_omega) * (1.f/YawGearRate), 0, GIMBAL_YAW_KD, except_t);
 //        YawMotor.setMITcmd(0,0,0,0,0);
     }
 
     void setPithRelative(AxisState target_s){
-        PithMotor.setMITcmd(target_s.pos-0.02f,target_s.omega * (1.f/PithGearRate),GIMBAL_PITCH_KP,GIMBAL_PITCH_KD,0);
+
+        float yaw_rad = angleMod(getYawState().pos - YawZero + PI/2.f);
+        if((yaw_rad < PI/6.f + 0.0f) && (yaw_rad > -PI/6.f - 0.0f)){
+            if(target_s.pos > 0.29f)
+                target_s.pos = 0.29f;
+        }
+
+        float pitch_rad = getPithState().pos + 0.03f;
+        float error_pos = target_s.pos - pitch_rad;
+        float error_omega = target_s.omega - getPithState().omega;
+
+        //重力补偿
+        float c,s;
+        arm_sin_cos_f32(pitch_rad, &s, &c);
+        float t_compen = c*GIMBAL_PITCH_CMX+s*GIMBAL_PITCH_CMY;
+        float tor = error_pos * GIMBAL_PITCH_KP + error_omega * GIMBAL_PITCH_KD + t_compen;
+
+        //tor = t_compen;
+
+        if(tor > 9.9f) tor = 9.9f;
+        if(tor < -9.9f) tor = -9.9f;
+
+        PithMotor.setMITcmd(0,0,0,0,tor);
     }
 
 }

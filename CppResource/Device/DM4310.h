@@ -30,7 +30,7 @@ namespace Device {
             float T_Rotor;          // 电机线圈的温度信息
         };
 
-        DM4310(CAN_HandleTypeDef *hc, uint32_t motorid);
+        DM4310(CAN_HandleTypeDef *hc, uint32_t motorid, float MAX_POS = 12.5, float MAX_VEL = 30.f, float MAX_TOR = 10.f);
 
         void init() override;
         bool receiveMessage(uint32_t id, uint8_t *pdata, uint32_t len) override;
@@ -46,6 +46,9 @@ namespace Device {
         static float uint_to_float(int x_int, float x_min, float x_max, int bits);
 
         static constexpr float PI = 3.141592653f;
+        const float max_pos;
+        const float max_vel;
+        const float max_tor;
 
     };
 }

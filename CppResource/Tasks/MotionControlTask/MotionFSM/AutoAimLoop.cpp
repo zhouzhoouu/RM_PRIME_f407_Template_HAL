@@ -40,11 +40,12 @@ StateLoopArg MotionFSM::AutoAimLoop(const volatile DBus::RCState* RCsta, INS_Dev
     auto angcmd = haimnano.getControlCmd();
     float real_omega = AbsMove.omega * GIMBAL_K_LEAD_OMEGA;
 
-    float ref_ang = angcmd.pitch;
+    auto PitchData = cur_sta.PithSta;
+    float ref_ang =  PitchData.pos + angcmd.pitch - hINS.getAngle().pitch;
     Abs_deg_recode = angcmd.yaw + real_omega*T_SAMPLE;
-    Abs_deg_recode = GimbalControl::angleMod(Abs_deg_recode);
+    //Abs_deg_recode = GimbalControl::angleMod(Abs_deg_recode);
 
-    auto YawData = GimbalControl::getYawState();
+    auto YawData = cur_sta.YawSta;
     float taget_pos = YawData.pos + Abs_deg_recode - hINS.getAngle().yaw;
 
     StateLoopArg rel = {

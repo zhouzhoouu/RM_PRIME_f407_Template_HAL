@@ -19,6 +19,7 @@ static uint8_t rx_buf[256];
 
         auto angle = hINS.getAngle();
         hnano.sendMsg(angle.yaw, angle.pitch);
+        //hnano.sendMsg();
 
         uint32_t len = CDC_Available_FS();
         if(len > 0){
@@ -36,7 +37,7 @@ static uint8_t rx_buf[256];
 
 
 
-//
+
 //[[noreturn]] void DebugTask(void const * argument){
 //
 //    float pack[5];

@@ -31,16 +31,23 @@ namespace ChassisControl{
     }
 
     constexpr void MotionCalOmnidForward(const MoveState& target_motion, float* motor_v_target) {
-        motor_v_target[0] = target_motion.vx + target_motion.vy + target_motion.omega;
-        motor_v_target[1] = -target_motion.vx + target_motion.vy + target_motion.omega;
-        motor_v_target[2] = -target_motion.vx - target_motion.vy + target_motion.omega;
-        motor_v_target[3] = target_motion.vx - target_motion.vy + target_motion.omega;
+        // 直接用代数表达式（等价于对 (vx,vy) 逆时针旋转 +90° 后的映射）
+        motor_v_target[0] = target_motion.vx - target_motion.vy + target_motion.omega;
+        motor_v_target[1] = target_motion.vx + target_motion.vy + target_motion.omega;
+        motor_v_target[2] = -target_motion.vx + target_motion.vy + target_motion.omega;
+        motor_v_target[3] = -target_motion.vx - target_motion.vy + target_motion.omega;
     }
 
     constexpr void MotionCalOmnidBackward(const float motor_v_target[4], MoveState* cla_motion){
-        cla_motion->vx = 0.25f * (motor_v_target[0] - motor_v_target[1] - motor_v_target[2] + motor_v_target[3]);
-        cla_motion->vy = 0.25f * (motor_v_target[0] + motor_v_target[1] - motor_v_target[2] - motor_v_target[3]);
-        cla_motion->omega = 0.25f * (motor_v_target[0] + motor_v_target[1] + motor_v_target[2] + motor_v_target[3]);
+        // 直接用代数逆解（不使用中间变量），保证与前向映射互为逆运算
+        float m0 = motor_v_target[0];
+        float m1 = motor_v_target[1];
+        float m2 = motor_v_target[2];
+        float m3 = motor_v_target[3];
+
+        cla_motion->vx = 0.25f * (m0 + m1 - m2 - m3);
+        cla_motion->vy = 0.25f * (m1 + m2 - m0 - m3);
+        cla_motion->omega = 0.25f * (m0 + m1 + m2 + m3);
     }
 
     //实测omega=1980时，实际转动速度2rad/s左右(英雄机器人)
@@ -48,7 +55,7 @@ namespace ChassisControl{
     MoveState setMove(MoveState target_state){
 
 
-        MoveState measure_state;
+        MoveState measure_state{};
         float motor_speed[4] = {0,0,0,0};
         for (int i = 0; i < 4; ++i) {
             DJiMotorGroup::MotorState bf = m3508Group_Chassis.getMotorState(i);

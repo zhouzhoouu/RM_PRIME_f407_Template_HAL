@@ -34,16 +34,16 @@ BMI088::Measurement tmp;
     }
 }
 
-//
-//void DebugTask(void const * argument){
-//
-//    INS_Device &hINS = INS_Device::getInstance();
-//
-//    while (1){
-//
-//        Debug::print_vofa(hINS.getAngle().data, 3);
-//        //Debug::print_vofa(tmp.acc, 3);
-//
-//        osDelay(50);
-//    }
-//}
+
+void DebugTask(void const * argument){
+
+    INS_Device &hINS = INS_Device::getInstance();
+
+    while (1){
+
+        Debug::print_vofa(hINS.getAngle().data, 3);
+        //Debug::print_vofa(tmp.acc, 3);
+
+        osDelay(50);
+    }
+}

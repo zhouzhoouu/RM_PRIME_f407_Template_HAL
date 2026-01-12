@@ -2,9 +2,9 @@
 
 namespace Device{
 
-    DM4310::DM4310(CAN_HandleTypeDef *hc, uint32_t motorid):
+    DM4310::DM4310(CAN_HandleTypeDef *hc, uint32_t motorid, float MAX_POS, float MAX_VEL, float MAX_TOR):
     InterfaceCAN(hc, 0x010+motorid, motorid),
-            active_ind(0)
+    active_ind(0),max_pos(MAX_POS), max_vel(MAX_VEL), max_tor(MAX_TOR)
     {
 
     }
@@ -29,9 +29,9 @@ namespace Device{
         state[next_ind].T_Mos = (float)(pdata[6]);
         state[next_ind].T_Rotor = (float)(pdata[7]);
 
-        state[next_ind].pos = uint_to_float(pos_int, -10*PI,  10*PI, 16);
-        state[next_ind].vel = uint_to_float(vel_int, -30, 30, 12);
-        state[next_ind].tor = uint_to_float(tor_int, -10, 10, 12);
+        state[next_ind].pos = uint_to_float(pos_int, -max_pos,  max_pos, 16);
+        state[next_ind].vel = uint_to_float(vel_int, -max_vel, max_vel, 12);
+        state[next_ind].tor = uint_to_float(tor_int, -max_tor, max_tor, 12);
 
         active_ind = next_ind;
 
@@ -43,11 +43,11 @@ namespace Device{
 
         uint16_t pos_tmp,vel_tmp,kp_tmp,kd_tmp,tor_tmp;
 
-        pos_tmp = float_to_uint(target_pos,  -10*PI,  10*PI,  16);
-        vel_tmp = float_to_uint(target_vel,  -30,  30,  12);
+        pos_tmp = float_to_uint(target_pos,  -max_pos,  max_pos,  16);
+        vel_tmp = float_to_uint(target_vel,  -max_vel,  max_vel,  12);
         kp_tmp  = float_to_uint(Kp,   0, 500, 12);
         kd_tmp  = float_to_uint(Kd,   0, 5, 12);
-        tor_tmp = float_to_uint(target_tor, -10,  10,  12);
+        tor_tmp = float_to_uint(target_tor, -max_tor,  max_tor,  12);
 
         uint8_t pdata[8] = {0};
         pdata[0] = (pos_tmp >> 8);

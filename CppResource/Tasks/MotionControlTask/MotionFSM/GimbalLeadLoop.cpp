@@ -30,7 +30,7 @@ StateLoopArg MotionFSM::GimbalLeadLoop(const volatile DBus::RCState* RCsta, INS_
     if(dpos * (float)dir > CHASSIS_FOLLOW_DES){
         chassis_omega_ref = CHASSIS_FOLLOW_OMEGA * (float)dir;
     }
-
+    //chassis_omega_ref = 0;
     ChassisControl::MoveState target_state = {
             {AbsMove.vx * cos_yaw - AbsMove.vy * sin_yaw,
              AbsMove.vx * sin_yaw + AbsMove.vy * cos_yaw,
@@ -38,10 +38,10 @@ StateLoopArg MotionFSM::GimbalLeadLoop(const volatile DBus::RCState* RCsta, INS_
     };
 
     float real_omega = AbsMove.omega * GIMBAL_K_LEAD_OMEGA;
-    Abs_deg_recode = GimbalControl::angleMod(Abs_deg_recode +  real_omega*T_SAMPLE);
+    Abs_deg_recode += real_omega*T_SAMPLE;
 
     auto YawData = GimbalControl::getYawState();
-    float taget_pos = YawData.pos + Abs_deg_recode - hINS.getAngle().yaw;
+    float taget_pos = GimbalControl::angleMod(YawData.pos + Abs_deg_recode - hINS.getAngle().yaw);
     StateLoopArg rel = {
             target_state,
             {{taget_pos, -cur_sta.ChassisSta.omega * GIMBAL_K_OMEGA_FORWARD}},
