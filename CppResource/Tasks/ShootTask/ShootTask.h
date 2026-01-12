@@ -10,9 +10,9 @@ using namespace Device;
 using namespace Component;
 
 constexpr float MAX_Fib_CUR = 10000.0f;
-constexpr float MAX_Tri_CUR = 3000.0f;
-constexpr float Tri_BACKING_SPEED = 4000.f;
-constexpr float Tri_BACKING_TIME = 200;
+constexpr float MAX_Tri_CUR = 16000.0f;
+constexpr float Tri_BACKING_SPEED = 900.f;
+constexpr float Tri_BACKING_TIME = 600;
 constexpr uint32_t TOPEN = 600;
 
 namespace TriggerControl{

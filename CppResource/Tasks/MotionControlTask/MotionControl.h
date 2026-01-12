@@ -22,7 +22,7 @@ namespace MotionParameter{
 
     static float constexpr CHASSIS_K_CHX = 3.5f;
     static float constexpr CHASSIS_K_CHY = 3.5f;
-    static float constexpr CHASSIS_K_OMEGA = 3.0f;
+    static float constexpr CHASSIS_K_OMEGA = 6.0f;
     static float constexpr CHASSIS_MAX_ACCEL = 500000.f;
     static float constexpr CHASSIS_MAX_ALPHA = 500000.f;
 
@@ -37,9 +37,8 @@ namespace MotionParameter{
     static float constexpr GIMBAL_PITCH_CMX = -.73f;
     static float constexpr GIMBAL_PITCH_CMY = -0.f;
 
-
     static float constexpr GIMBAL_K_CH_PITH = 1/1100.f;
-    static float constexpr GIMBAL_K_OMEGA_FORWARD = 2.58f/900.f;
+    static float constexpr GIMBAL_K_OMEGA_FORWARD = 2.37f/1980.f;
     static float constexpr GIMBAL_K_LEAD_OMEGA = 2.3f/1000.f;
 
     static float constexpr GIMBAL_MOVE_SPEED = RC_MAX_INPUT * CHASSIS_K_OMEGA * GIMBAL_K_LEAD_OMEGA + 1; //云台运动参考速度
@@ -47,7 +46,7 @@ namespace MotionParameter{
     static float constexpr GIMBAL_RAD_POS = 0.3f; //位置控区间
     static float constexpr GIMBAL_MAX_ALPHA = 12000.f;
 
-    static float constexpr AUTOROTATE_MAX_OMEGA = 2400.f;
+    static float constexpr AUTOROTATE_MAX_OMEGA = 6000.f;
     static float constexpr AUTOROTATE_ANGLE_BIAS = -0.3f; //rad
 
 }
@@ -73,7 +72,7 @@ namespace ChassisControl{
 namespace GimbalControl{
 
     static float constexpr PI = 3.141592653f;
-    static float constexpr YawGearRate = 0.7;
+    static float constexpr YawGearRate = 1;
     static float constexpr PithGearRate = 1.f;
 
     extern float YawZero;

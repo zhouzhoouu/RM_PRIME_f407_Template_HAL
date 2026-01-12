@@ -5,10 +5,11 @@ using namespace MotionParameter;
 
 namespace GimbalControl{
 
-    DM4310 YawMotor(&hcan1, 1, PI*10.f, 30.f, 10.f);
-    DM4310 PithMotor(&hcan2, 2);
+    DM4310 YawMotor(&hcan1, 2);
+    DM4310 PithMotor(&hcan2, 1);
 
-    float YawZero = 0.f;
+    float YawZero = 1.f;
+    float PitchZero = 0.5f;
 
     //将角度规范化到 -PI 到 PI
     float angleMod(float angle){
@@ -27,7 +28,7 @@ namespace GimbalControl{
 
     AxisState getPithState(){
         return {
-            {PithMotor.getMotorState().pos * PithGearRate,
+            {(PithMotor.getMotorState().pos - PitchZero)* PithGearRate,
             PithMotor.getMotorState().vel * PithGearRate}
         };
     }

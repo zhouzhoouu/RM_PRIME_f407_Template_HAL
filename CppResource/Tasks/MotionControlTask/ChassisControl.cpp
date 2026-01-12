@@ -17,17 +17,17 @@ namespace ChassisControl{
     };
 
     constexpr void MotionCalMecanumForward(const MoveState& target_motion, float* motor_v_target) {
-        motor_v_target[0] = target_motion.vx - target_motion.vy + target_motion.omega;
-        motor_v_target[1] = -target_motion.vx - target_motion.vy + target_motion.omega;
-        motor_v_target[2] = target_motion.vx - target_motion.vy - target_motion.omega;
-        motor_v_target[3] = -target_motion.vx - target_motion.vy - target_motion.omega;
+        motor_v_target[0] = target_motion.vx + target_motion.vy - target_motion.omega;
+        motor_v_target[1] = -target_motion.vx + target_motion.vy - target_motion.omega;
+        motor_v_target[2] = target_motion.vx + target_motion.vy + target_motion.omega;
+        motor_v_target[3] = -target_motion.vx + target_motion.vy + target_motion.omega;
     }
 
     constexpr void MotionCalMecanumBackward(const float motor_v_target[4], MoveState* cla_motion) {
 
         cla_motion->vx = 0.25f * (motor_v_target[0] - motor_v_target[1] + motor_v_target[2] - motor_v_target[3]);
-        cla_motion->vy = -0.25f * ( motor_v_target[0] + motor_v_target[1] + motor_v_target[2] + motor_v_target[3]);
-        cla_motion->omega = 0.25f * ( motor_v_target[0] + motor_v_target[1] - motor_v_target[2] - motor_v_target[3]);
+        cla_motion->vy = 0.25f * ( motor_v_target[0] + motor_v_target[1] + motor_v_target[2] + motor_v_target[3]);
+        cla_motion->omega = -0.25f * ( motor_v_target[0] + motor_v_target[1] - motor_v_target[2] - motor_v_target[3]);
     }
 
     constexpr void MotionCalOmnidForward(const MoveState& target_motion, float* motor_v_target) {
@@ -61,7 +61,7 @@ namespace ChassisControl{
             DJiMotorGroup::MotorState bf = m3508Group_Chassis.getMotorState(i);
             motor_speed[i] = bf.speed;
         }
-        MotionCalOmnidBackward(motor_speed, &measure_state);
+        MotionCalMecanumBackward(motor_speed, &measure_state);
 
         MoveState dv{{target_state.vx - measure_state.vx,
                    target_state.vy - measure_state.vy,
@@ -82,7 +82,7 @@ namespace ChassisControl{
                                  measure_state.omega + dv.omega}};
 
         float motor_v_target[4] = {};
-        MotionCalOmnidForward(target_state_accel_limit, motor_v_target);
+        MotionCalMecanumForward(target_state_accel_limit, motor_v_target);
 
         short tmp_cur[] = {0, 0, 0, 0};
         for (int i = 0; i < 4; ++i) {
