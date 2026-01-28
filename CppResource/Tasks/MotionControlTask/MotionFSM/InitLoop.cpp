@@ -8,9 +8,5 @@ static float acc_x0, v_x, acc_y0, v_y;
 StateLoopArg MotionFSM::InitLoop(const volatile DBus::RCState* RCsta, INS_Device& hINS, const StateLoopArg& cur_sta){
     InitFlag.InitNI = false;
 
-    return {
-        {{0,0,0}},
-        {{cur_sta.YawSta.pos,0}},
-        {{0,0}}
-    };
+    return cur_sta;
 }
