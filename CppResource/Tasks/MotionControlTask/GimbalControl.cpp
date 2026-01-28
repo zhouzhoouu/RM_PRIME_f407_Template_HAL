@@ -87,15 +87,20 @@ namespace GimbalControl{
                 target_s.pos = 0.29f;
         }
 
-        float pitch_rad = getPithState().pos + 0.03f;
+        float pitch_rad = getPithState().pos;
         float error_pos = target_s.pos - pitch_rad;
-        float error_omega = target_s.omega - getPithState().omega;
+        float epo = error_pos*GIMBAL_PITCH_KI;
+        if(epo > 5.f) epo = 5.f;
+        if(epo < -5.f) epo = -5.f;
+        float error_omega = target_s.omega - getPithState().omega + epo;
 
         //重力补偿
         float c,s;
         arm_sin_cos_f32(pitch_rad, &s, &c);
         float t_compen = c*GIMBAL_PITCH_CMX+s*GIMBAL_PITCH_CMY;
-        float tor = error_pos * GIMBAL_PITCH_KP + error_omega * GIMBAL_PITCH_KD + t_compen;
+        float tor = error_pos * GIMBAL_PITCH_KP +
+                error_omega * GIMBAL_PITCH_KD +
+                t_compen;
 
         //tor = t_compen;
 

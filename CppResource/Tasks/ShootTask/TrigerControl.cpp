@@ -20,7 +20,7 @@ namespace TriggerControl{
         float motor_speed = m3508Group_triger.getMotorState(trig_id).speed;
 
         float error = target_speed - dir*motor_speed;
-        if(error > 150.f){
+        if(error > 500){
             timeout++;
             if(timeout > Tri_BACKING_TIME){
                 isbacking = true;

@@ -13,6 +13,7 @@ constexpr float MAX_Fib_CUR = 10000.0f;
 constexpr float MAX_Tri_CUR = 3000.0f;
 constexpr float Tri_BACKING_SPEED = 4000.f;
 constexpr float Tri_BACKING_TIME = 200;
+constexpr float TRIG_STUCK_RATE = 0.20f;
 constexpr uint32_t TOPEN = 600;
 
 namespace TriggerControl{

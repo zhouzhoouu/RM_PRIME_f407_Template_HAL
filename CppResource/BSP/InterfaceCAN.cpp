@@ -37,11 +37,13 @@ namespace BSP{
 
         CAN_config_init();
 
-        //while (CAN_start[0] == false || CAN_start[1] == false) __NOP();
+        HAL_Delay(1000);
 
-        HAL_Delay(100);
+//        while (CAN_start[0] == false || CAN_start[1] == false) __NOP();
+
         for (int i = 0; i < CANDeviceCount; ++i) {
             CANDeviceList[i]->init();
+            HAL_Delay(200);
         }
 
     }

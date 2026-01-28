@@ -45,6 +45,9 @@ namespace Device{
         void ProcessData();
 
     private:
+        static constexpr int DIR_YAW = -1;
+        static constexpr int DIR_PITCH = 1;
+
         NanoMsg() = default;
         NanoMsg(const NanoMsg&) = delete;
         NanoMsg& operator=(const NanoMsg&) = delete;
