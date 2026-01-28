@@ -5,10 +5,11 @@ using namespace MotionParameter;
 
 namespace GimbalControl{
 
-    DM4310 YawMotor(&hcan1, 2);
+    DM4310 YawMotor(&hcan1, 2, 4*PI, 30.f,10.f);
+//    DM4310 YawMotor(&hcan1, 2);
     DM4310 PithMotor(&hcan2, 1);
 
-    float YawZero = 1.f;
+    float YawZero = 2.1f;
     float PitchZero = 0.5f;
 
     //将角度规范化到 -PI 到 PI
