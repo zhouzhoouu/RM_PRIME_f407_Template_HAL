@@ -59,29 +59,30 @@ using namespace MotionFSM;
 
 
 //SupCap supCap(&hcan1);
-//[[noreturn]] void DebugTask(void const * argument){
-//
-//    DBus &hDbus = DBus::getInstance();
-//    INS_Device &hINS = INS_Device::getInstance();
-//    Referee &hreferee = Referee::getInstance();
-//    using namespace RefereeType;
-//
-//
-//    while (true){
-//
+Referee &hreferee = Referee::getInstance();
+
+[[noreturn]] void DebugTask(void const * argument){
+
+    DBus &hDbus = DBus::getInstance();
+    INS_Device &hINS = INS_Device::getInstance();
+    using namespace RefereeType;
+
+
+    while (true){
+
 //        const volatile DBus::RCState* sta = hDbus.getState();
 ////        supCap.SetRestEng(hreferee.getRefereeInfo<RefereeType::PowerHeatData>().chassis_power_buffer);
 //
 //        float pack[5];
-//
+//        pack[0] = hDbus.getState()->ch[2];
 ////        pack[0] = hreferee.getRefereeInfo<PowerHeatData>().reserved;
 ////        //pack[1] = hreferee.getRefereeInfo<PowerHeatData>().chassis_power_buffer;
 ////        pack[1] = supCap.getPower();
 ////        pack[2] = hreferee.getRefereeInfo<PowerHeatData>().reserved - supCap.getPower();
-//        pack[0] = hreferee.getRefereeInfo<PowerHeatData>().shooter_id1_17mm_cooling_heat;
+////        pack[0] = hreferee.getRefereeInfo<PowerHeatData>().shooter_id1_17mm_cooling_heat;
 //
 //        Debug::print_vofa(pack, 3);
-//
-//        osDelay(50);
-//    }
-//}
+
+        osDelay(50);
+    }
+}
