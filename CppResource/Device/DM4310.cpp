@@ -41,6 +41,11 @@ namespace Device{
 
     void DM4310::setMITcmd(float target_pos, float target_vel, float Kp, float Kd, float target_tor) {
 
+        if(state[active_ind].sta == StateCode::DISABLED){
+            init();
+            return;
+        }
+
         uint16_t pos_tmp,vel_tmp,kp_tmp,kd_tmp,tor_tmp;
 
         pos_tmp = float_to_uint(target_pos,  -max_pos,  max_pos,  16);
