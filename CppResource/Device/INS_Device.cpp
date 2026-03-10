@@ -23,7 +23,7 @@ void INS_Device::Insert(Vector3 acc, Vector3 gyro, Vector3 meg ,float dt){
         omiga.data[i] = gyro.data[i];
     }
 
-    AHRS_update(angle_quat.data, 0.001f, omiga.data, accel_tmp.data, mag_tmp.data);
+    AHRS_update(angle_quat.data, dt, omiga.data, accel_tmp.data, mag_tmp.data);
     get_angle(angle_quat.data, &angle.yaw, &angle.pitch, &angle.roll);
 
 }
