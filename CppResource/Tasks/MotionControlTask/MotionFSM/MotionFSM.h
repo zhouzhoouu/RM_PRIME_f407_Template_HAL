@@ -60,6 +60,12 @@ namespace MotionFSM{
     struct IntoAutoAim{};
     struct IntoAutoRotate{};
 
+    struct PausePress{};
+    struct LeftPress{};
+    struct RightPress{};
+
+    struct PowerOff{};
+
     struct motionTransition{
         auto operator()() const{
             using namespace boost::sml;
@@ -70,7 +76,9 @@ namespace MotionFSM{
                     state<_> + event<IntoGimbalLead> / []{ CurrentHandler = GimbalLeadLoop;InitFlag.GimbalLeadNI = true;} = state<GimbalLead>,
                     state<_> + event<IntoAutoAim> / []{ CurrentHandler = AutoAimLoop;InitFlag.AutoAimNI = true;} = state<AutoAim>,
                     state<_> + event<IntoAutoRotate> / []{ CurrentHandler = AutoRotateLoop;InitFlag.AutoRotateNI = true;} = state<AutoRotate>,
-                    state<_> + event<IntoIdle> / []{ CurrentHandler = IdleLoop;InitFlag.IdleNI = true;} = state<Idle>
+                    state<_> + event<IntoIdle> / []{ CurrentHandler = IdleLoop;InitFlag.IdleNI = true;} = state<Idle>,
+
+                    state<_> + event<PausePress> / []{ CurrentHandler = IdleLoop;InitFlag.IdleNI = true;} = state<Idle>
             );
         }
     };
