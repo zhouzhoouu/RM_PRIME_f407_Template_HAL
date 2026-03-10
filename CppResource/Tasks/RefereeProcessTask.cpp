@@ -9,6 +9,7 @@ using namespace Device;
 
     while (true){
         href.ProcessData();
+
         osDelay(2);
     }
 }

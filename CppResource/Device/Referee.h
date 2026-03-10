@@ -114,9 +114,6 @@ namespace Device{
     class Referee {
     public:
 
-
-
-
         static constexpr uint32_t MIN_FRAME_SIZE = 9;
 
 

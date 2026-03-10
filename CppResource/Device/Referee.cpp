@@ -1,6 +1,10 @@
 #include "Referee.h"
 using namespace Device;
 
+namespace Device{
+    Referee &__HREFEREE__ = Referee::getInstance();
+}
+
 Referee &Referee::getInstance(){
     static Referee instance;
     return instance;
