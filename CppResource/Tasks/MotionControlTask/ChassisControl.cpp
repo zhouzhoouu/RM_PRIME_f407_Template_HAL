@@ -8,12 +8,15 @@ namespace ChassisControl{
     constexpr float MAX_CUR = 16000.0f;
 
     DJiMotorGroup m3508Group_Chassis(&hcan1, 0x201, 0x200);
+    SupCap supCap(&hcan1);
+
+    static bool isPowerOn = false;
 
     DeltaPID Speed_PID[4] = {
-            DeltaPID(2.0f, 0.05f, 0.0f, 0.0f, MAX_CUR, -MAX_CUR),
-            DeltaPID(2.0f, 0.05f, 0.0f, 0.0f, MAX_CUR, -MAX_CUR),
-            DeltaPID(2.0f, 0.05f, 0.0f, 0.0f, MAX_CUR, -MAX_CUR),
-            DeltaPID(2.0f, 0.05f, 0.0f, 0.0f, MAX_CUR, -MAX_CUR)
+            DeltaPID(2.0f, 0.03f, 0.05f, 0.0f, MAX_CUR, -MAX_CUR),
+            DeltaPID(2.0f, 0.03f, 0.05f, 0.0f, MAX_CUR, -MAX_CUR),
+            DeltaPID(2.0f, 0.03f, 0.05f, 0.0f, MAX_CUR, -MAX_CUR),
+            DeltaPID(2.0f, 0.03f, 0.05f, 0.0f, MAX_CUR, -MAX_CUR)
     };
 
     constexpr void MotionCalMecanumForward(const MoveState& target_motion, float* motor_v_target) {
@@ -32,10 +35,10 @@ namespace ChassisControl{
 
     constexpr void MotionCalOmnidForward(const MoveState& target_motion, float* motor_v_target) {
         // 直接用代数表达式（等价于对 (vx,vy) 逆时针旋转 +90° 后的映射）
-        motor_v_target[0] = target_motion.vx - target_motion.vy + target_motion.omega;
-        motor_v_target[1] = target_motion.vx + target_motion.vy + target_motion.omega;
-        motor_v_target[2] = -target_motion.vx + target_motion.vy + target_motion.omega;
-        motor_v_target[3] = -target_motion.vx - target_motion.vy + target_motion.omega;
+        motor_v_target[0] = -target_motion.vx + target_motion.vy + target_motion.omega;
+        motor_v_target[1] = -target_motion.vx - target_motion.vy + target_motion.omega;
+        motor_v_target[2] = target_motion.vx - target_motion.vy + target_motion.omega;
+        motor_v_target[3] = target_motion.vx + target_motion.vy + target_motion.omega;
     }
 
     constexpr void MotionCalOmnidBackward(const float motor_v_target[4], MoveState* cla_motion){
@@ -45,8 +48,8 @@ namespace ChassisControl{
         float m2 = motor_v_target[2];
         float m3 = motor_v_target[3];
 
-        cla_motion->vx = 0.25f * (m0 + m1 - m2 - m3);
-        cla_motion->vy = 0.25f * (m1 + m2 - m0 - m3);
+        cla_motion->vx = -0.25f * (m0 + m1 - m2 - m3);
+        cla_motion->vy = -0.25f * (m1 + m2 - m0 - m3);
         cla_motion->omega = 0.25f * (m0 + m1 + m2 + m3);
     }
 
@@ -58,6 +61,11 @@ namespace ChassisControl{
         }
         isPowerOn = s;
     }
+
+    float GetPower(){
+        return supCap.getPower();
+    }
+
     //实测omega=1980时，实际转动速度2rad/s左右(英雄机器人)
     // omega=900时，实际转动速度约1rad/s(云台跟随)
     MoveState setMove(MoveState target_state){
@@ -75,6 +83,8 @@ namespace ChassisControl{
             motor_speed[i] = bf.speed;
         }
         MotionCalOmnidBackward(motor_speed, &measure_state);
+
+        supCap.SetRestEng(60.f);
 
         MoveState dv{{target_state.vx - measure_state.vx,
                    target_state.vy - measure_state.vy,
