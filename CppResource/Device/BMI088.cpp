@@ -36,7 +36,7 @@ namespace Device {
         return instance;
     }
 
-    void BMI088::init() {
+    void BMI088::Init() {
         BMI088::Status_e status_accel = NO_ERROR;
         BMI088::Status_e status_gyro = NO_ERROR;
 
@@ -75,30 +75,29 @@ namespace Device {
         return tmp;
     }
 
-    BMI088::Measurement BMI088::GetMeasurement() {
-        Measurement m{};
+
+    void BMI088::Update(){
         Raw_data raw = readRawData();
-        m.acc[0] = (float)raw.acc[0] * BMI088::ACCEL_SENSITIVITY;
-        m.acc[1] = (float)raw.acc[1] * BMI088::ACCEL_SENSITIVITY;
-        m.acc[2] = (float)raw.acc[2] * BMI088::ACCEL_SENSITIVITY;
-        m.gyro[0] = (float)raw.gyro[0] * BMI088::GYRO_SENSITIVITY;
-        m.gyro[1] = (float)raw.gyro[1] * BMI088::GYRO_SENSITIVITY;
-        m.gyro[2] = (float)raw.gyro[2] * BMI088::GYRO_SENSITIVITY;
-        m.temp = (float)raw.temp * BMI088::TEMP_FACTOR + BMI088::TEMP_OFFSET;
-        return m;
+        tmp_measurement.acc[0] = (float)raw.acc[0] * BMI088::ACCEL_SENSITIVITY;
+        tmp_measurement.acc[1] = (float)raw.acc[1] * BMI088::ACCEL_SENSITIVITY;
+        tmp_measurement.acc[2] = (float)raw.acc[2] * BMI088::ACCEL_SENSITIVITY;
+        tmp_measurement.gyro[0] = (float)raw.gyro[0] * BMI088::GYRO_SENSITIVITY;
+        tmp_measurement.gyro[1] = (float)raw.gyro[1] * BMI088::GYRO_SENSITIVITY;
+        tmp_measurement.gyro[2] = (float)raw.gyro[2] * BMI088::GYRO_SENSITIVITY;
+        tmp_measurement.temp = (float)raw.temp * BMI088::TEMP_FACTOR + BMI088::TEMP_OFFSET;
+    }
+
+    BMI088::Measurement BMI088::GetMeasurement() {
+        return tmp_measurement;
     }
 
     void BMI088::GetMeasurement(float *acc, float *gyro, float *temp){
-        Raw_data raw = readRawData();
-        acc[0] = (float)raw.acc[0] * BMI088::ACCEL_SENSITIVITY;
-        acc[1] = (float)raw.acc[1] * BMI088::ACCEL_SENSITIVITY;
-        acc[2] = (float)raw.acc[2] * BMI088::ACCEL_SENSITIVITY;
-        gyro[0] = (float)raw.gyro[0] * BMI088::GYRO_SENSITIVITY;
-        gyro[1] = (float)raw.gyro[1] * BMI088::GYRO_SENSITIVITY;
-        gyro[2] = (float)raw.gyro[2] * BMI088::GYRO_SENSITIVITY;
-        *temp = (float)raw.temp * BMI088::TEMP_FACTOR + BMI088::TEMP_OFFSET;
+        for (int i = 0; i < 3; ++i) {
+            acc[i] = tmp_measurement.acc[i];
+            gyro[i] = tmp_measurement.gyro[i];
+        }
+        *temp = tmp_measurement.temp;
     }
-
 
     inline void BMI088::writeReg(Sensor_cfg info, uint8_t reg, uint8_t data){
 
