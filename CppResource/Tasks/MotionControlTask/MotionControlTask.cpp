@@ -15,7 +15,8 @@ using namespace MotionFSM;
     MotionFSM::StateLoopArg input_sta{
         ChassisControl::setMove({{0,0,0}}),
         GimbalControl::getYawState(),
-        GimbalControl::getPithState()
+        GimbalControl::getPithState(),
+        0.f
     };
 
     while (true){
@@ -47,13 +48,16 @@ using namespace MotionFSM;
         input_sta.YawSta = GimbalControl::getYawState();
         input_sta.PithSta = GimbalControl::getPithState();
 
-        auto output_sta = MotionFSM::CurrentHandler(sta, hINS, input_sta);
+        auto output_sta = MotionFSM::CurrentHandler(&CMD, hINS, input_sta);
 
         GimbalControl::setYawRelative(output_sta.YawSta);
         GimbalControl::setPithRelative(output_sta.PithSta);
         input_sta.ChassisSta = ChassisControl::setMove(output_sta.ChassisSta);
 
-        osDelay(1);
+        if(MotionParameter::GIMBAL_PITCH_LOWER > output_sta.taget_pitch) output_sta.taget_pitch = MotionParameter::GIMBAL_PITCH_LOWER;
+        else if(MotionParameter::GIMBAL_PITCH_UPPER < output_sta.taget_pitch) output_sta.taget_pitch = MotionParameter::GIMBAL_PITCH_UPPER;
+        else input_sta.taget_pitch = output_sta.taget_pitch;
+
         osDelay(2);
     }
 }
