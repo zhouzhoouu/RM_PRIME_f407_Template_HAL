@@ -50,10 +50,23 @@ namespace ChassisControl{
         cla_motion->omega = 0.25f * (m0 + m1 + m2 + m3);
     }
 
+    void NotifyPowerSate(bool s){
+        if(isPowerOn && !s){
+            for(auto & i : Speed_PID){
+                i.Reset();
+            }
+        }
+        isPowerOn = s;
+    }
     //实测omega=1980时，实际转动速度2rad/s左右(英雄机器人)
     // omega=900时，实际转动速度约1rad/s(云台跟随)
     MoveState setMove(MoveState target_state){
 
+        if(!isPowerOn){
+            short tc[] = {0,0,0,0};
+            m3508Group_Chassis.setMotorCurrent(tc);
+            return {{0,0,0}};
+        }
 
         MoveState measure_state{};
         float motor_speed[4] = {0,0,0,0};

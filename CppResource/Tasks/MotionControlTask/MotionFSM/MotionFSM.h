@@ -71,6 +71,7 @@ namespace MotionFSM{
             using namespace boost::sml;
             return make_transition_table(
                     *state<Init> + event<InitComplete> / []{ CurrentHandler = IdleLoop;InitFlag.IdleNI = true;} = state<Idle>,
+                    state<_> + event<PowerOff> / []{ CurrentHandler = InitLoop;InitFlag.InitNI = true;} = state<Init>,
 
                     state<_> + event<IntoChassisLead> / []{ CurrentHandler = ChassisLeadLoop;InitFlag.ChassisLeadNI = true;} = state<ChassisLead>,
                     state<_> + event<IntoGimbalLead> / []{ CurrentHandler = GimbalLeadLoop;InitFlag.GimbalLeadNI = true;} = state<GimbalLead>,
