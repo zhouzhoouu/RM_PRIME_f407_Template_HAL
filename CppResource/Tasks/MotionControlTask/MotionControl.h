@@ -23,11 +23,11 @@ namespace MotionParameter{
     static float constexpr CHASSIS_K_CHX = 3.5f;
     static float constexpr CHASSIS_K_CHY = 3.5f;
     static float constexpr CHASSIS_K_OMEGA = 3.0f;
-    static float constexpr CHASSIS_MAX_ACCEL = 500000.f;
-    static float constexpr CHASSIS_MAX_ALPHA = 500000.f;
+    static float constexpr CHASSIS_MAX_ACCEL = 800000.f;
+    static float constexpr CHASSIS_MAX_ALPHA = 800000.f;
 
-    static float constexpr CHASSIS_FOLLOW_OMEGA = 1200.f;
-    static float constexpr CHASSIS_FOLLOW_DES = 0.3; //rad
+    static float constexpr CHASSIS_FOLLOW_OMEGA = 1000.f;
+    static float constexpr CHASSIS_FOLLOW_DES = 0.4; //rad
 
 
     static float constexpr GIMBAL_YAW_KD = 0.72f;
