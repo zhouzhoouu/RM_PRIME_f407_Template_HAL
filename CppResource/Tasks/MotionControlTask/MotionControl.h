@@ -32,6 +32,9 @@ namespace MotionParameter{
 
     static float constexpr GIMBAL_YAW_KD = 0.72f;
     static float constexpr GIMBAL_YAW_KP = 0.f;
+
+    static float constexpr GIMBAL_PITCH_UPPER = 0.3f;
+    static float constexpr GIMBAL_PITCH_LOWER = -0.5f;
     static float constexpr GIMBAL_PITCH_KP = 7.f;
     static float constexpr GIMBAL_PITCH_KI = 30.f;
     static float constexpr GIMBAL_PITCH_KD = 0.6f;
@@ -39,7 +42,7 @@ namespace MotionParameter{
     static float constexpr GIMBAL_PITCH_CMY = -0.f;
 
 
-    static float constexpr GIMBAL_K_CH_PITH = 1/1100.f;
+    static float constexpr GIMBAL_K_CH_PITH = 1/200.f;
     static float constexpr GIMBAL_K_OMEGA_FORWARD = 2.58f/900.f;
     static float constexpr GIMBAL_K_LEAD_OMEGA = 2.3f/1000.f;
 
