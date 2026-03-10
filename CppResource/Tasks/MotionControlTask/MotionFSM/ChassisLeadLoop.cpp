@@ -4,7 +4,7 @@
 using namespace MotionFSM;
 using namespace MotionParameter;
 
-StateLoopArg MotionFSM::ChassisLeadLoop(const volatile DBus::RCState* RCsta, INS_Device& hINS, const StateLoopArg& cur_sta){
+StateLoopArg MotionFSM::ChassisLeadLoop(const volatile RCcmd_t* RCsta, INS_Device& hINS, const StateLoopArg& cur_sta){
 
     if(InitFlag.ChassisLeadNI){
         InitFlag.ChassisLeadNI = false;
@@ -16,12 +16,14 @@ StateLoopArg MotionFSM::ChassisLeadLoop(const volatile DBus::RCState* RCsta, INS
              -(float)RCsta->ch[0] * CHASSIS_K_OMEGA}
     };
 
-    float ref_ang = (float) RCsta->ch[1] * GIMBAL_K_CH_PITH;
+    float pitch_omega = (float) RCsta->ch[1] * GIMBAL_K_CH_PITH;
+    float taget_pitch = GimbalControl::angleMod(cur_sta.taget_pitch + pitch_omega*T_SAMPLE);
 
     StateLoopArg rel = {
             target_state,
             {{GimbalControl::YawZero, 0}},
-            {{ref_ang, 0}}
+            {{taget_pitch, pitch_omega}},
+            taget_pitch
     };
 
     return rel;

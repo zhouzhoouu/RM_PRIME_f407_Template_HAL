@@ -11,7 +11,6 @@ static uint8_t rx_buf[256];
 
 [[noreturn]] void NanoTask(void const * argument){
 
-    auto &hbuzzer = Buzzer::getInstance();
     auto &hINS = INS_Device::getInstance();
     auto &hnano = NanoMsg::getInstance();
 

@@ -5,6 +5,7 @@
 #include "DJiMotorGroup.h"
 #include "DBus.h"
 #include "DeltaPID.h"
+#include "VT03.h"
 
 using namespace Device;
 using namespace Component;

@@ -3,6 +3,8 @@
 
 using namespace MotionParameter;
 
+#define InInterval(val, center, R) ( (val) < ((center)+(R)) ) && ( (val) > ((center)-(R)) )
+
 namespace GimbalControl{
 
     DM4310 YawMotor(&hcan1, 2, 4*PI, 30.f,10.f);
@@ -11,6 +13,7 @@ namespace GimbalControl{
 
     float YawZero = 2.1f;
     float PitchZero = 0.5f;
+    static bool isPowerOn = false;
 
     //将角度规范化到 -PI 到 PI
     float angleMod(float angle){
@@ -21,6 +24,11 @@ namespace GimbalControl{
 
 
     AxisState getYawState(){
+
+        if(!isPowerOn){
+            return {{0,0}};
+        }
+
         return {
                 {YawMotor.getMotorState().pos * YawGearRate,
                  YawMotor.getMotorState().vel * YawGearRate}
@@ -28,10 +36,19 @@ namespace GimbalControl{
     }
 
     AxisState getPithState(){
+
+        if(!isPowerOn){
+            return {{0,0}};
+        }
+
         return {
             {(PithMotor.getMotorState().pos - PitchZero)* PithGearRate,
             PithMotor.getMotorState().vel * PithGearRate}
         };
+    }
+
+    void NotifyPowerSate(bool s){
+        isPowerOn = s;
     }
 
     void setYawRelative(AxisState target_s){
@@ -83,21 +100,32 @@ namespace GimbalControl{
 
     void setPithRelative(AxisState target_s){
 
-        float yaw_rad = angleMod(getYawState().pos - YawZero + PI/2.f);
-        if((yaw_rad < PI/6.f + 0.0f) && (yaw_rad > -PI/6.f - 0.0f)){
-            if(target_s.pos > 0.29f)
-                target_s.pos = 0.29f;
+        float yaw_rad = angleMod(getYawState().pos);
+
+        if(target_s.pos > GIMBAL_PITCH_UPPER) target_s.pos = GIMBAL_PITCH_UPPER;
+        if(target_s.pos < GIMBAL_PITCH_LOWER) target_s.pos = GIMBAL_PITCH_LOWER;
+
+        if( InInterval(yaw_rad, 0.65f, PI/6.f + 0.1f) || InInterval(yaw_rad, 0.65f - PI, PI/6.f + 0.1f) ){
+            if(target_s.pos > 0.2f){
+                target_s.pos = 0.2f;
+                target_s.omega = 0.f;
+            }
         }
 
-        float pitch_rad = getPithState().pos + 0.03f;
+        float pitch_rad = getPithState().pos;
         float error_pos = target_s.pos - pitch_rad;
-        float error_omega = target_s.omega - getPithState().omega;
+        float epo = error_pos*GIMBAL_PITCH_KI;
+        if(epo > 5.f) epo = 5.f;
+        if(epo < -5.f) epo = -5.f;
+        float error_omega = target_s.omega - getPithState().omega + epo;
 
         //重力补偿
         float c,s;
         arm_sin_cos_f32(pitch_rad, &s, &c);
         float t_compen = c*GIMBAL_PITCH_CMX+s*GIMBAL_PITCH_CMY;
-        float tor = error_pos * GIMBAL_PITCH_KP + error_omega * GIMBAL_PITCH_KD + t_compen;
+        float tor = error_pos * GIMBAL_PITCH_KP +
+                error_omega * GIMBAL_PITCH_KD +
+                t_compen;
 
         //tor = t_compen;
 

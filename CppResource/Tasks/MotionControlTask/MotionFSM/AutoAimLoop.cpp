@@ -7,7 +7,7 @@ using namespace MotionParameter;
 
 static auto &haimnano = NanoMsg::getInstance();
 static float Abs_deg_recode = 0;
-StateLoopArg MotionFSM::AutoAimLoop(const volatile DBus::RCState* RCsta, INS_Device& hINS, const StateLoopArg& cur_sta){
+StateLoopArg MotionFSM::AutoAimLoop(const volatile RCcmd_t* RCsta, INS_Device& hINS, const StateLoopArg& cur_sta){
     if(InitFlag.AutoAimNI){
         Abs_deg_recode = hINS.getAngle().yaw;
         InitFlag.AutoAimNI = false;
@@ -42,7 +42,7 @@ StateLoopArg MotionFSM::AutoAimLoop(const volatile DBus::RCState* RCsta, INS_Dev
 
     auto PitchData = cur_sta.PithSta;
     float ref_ang =  PitchData.pos + angcmd.pitch - hINS.getAngle().pitch;
-    Abs_deg_recode = angcmd.yaw + real_omega*T_SAMPLE;
+    Abs_deg_recode = angcmd.yaw;
     //Abs_deg_recode = GimbalControl::angleMod(Abs_deg_recode);
 
     auto YawData = cur_sta.YawSta;
@@ -51,7 +51,8 @@ StateLoopArg MotionFSM::AutoAimLoop(const volatile DBus::RCState* RCsta, INS_Dev
     StateLoopArg rel = {
             target_state,
             {{taget_pos, -cur_sta.ChassisSta.omega * GIMBAL_K_OMEGA_FORWARD}},
-            {{ref_ang, 0}}
+            {{ref_ang, 0}},
+            ref_ang
     };
 
     return rel;

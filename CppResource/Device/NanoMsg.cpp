@@ -29,12 +29,12 @@ void NanoMsg::sendMsg(float yaw, float pitch){
     sendBuff[1] = 0x21; // 设置地址
     sendBuff[2] = 13;   // 设置帧长
 
-    float data_array[] = {-yaw, pitch};
+    float data_array[] = {DIR_YAW*yaw, DIR_PITCH*pitch};
 
     for (int j = 0; j < 2; j++)
     {
         uint8_t* float_data_ptr = (uint8_t*)&data_array[j];
-        for (int i = 0; i < sizeof(float); i++)
+        for (uint32_t i = 0; i < sizeof(float); i++)
         {
             sendBuff[3 + j * sizeof(float) + i] = float_data_ptr[i];
         }
@@ -51,8 +51,8 @@ void NanoMsg::sendMsg(float yaw, float pitch){
 
 INS_Device::Vector3 NanoMsg::getControlCmd(){
     INS_Device::Vector3 rel = {{{0.f, 0.f, 0.f}}};
-    rel.yaw = -yaw_Union.Float;
-    rel.pitch = pitch_Union.Float;
+    rel.yaw = DIR_YAW*yaw_Union.Float;
+    rel.pitch = DIR_PITCH*pitch_Union.Float;
 
     return rel;
 }

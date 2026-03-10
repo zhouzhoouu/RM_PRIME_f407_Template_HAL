@@ -37,7 +37,8 @@ namespace Device{
 
         static BMI088& getInstance();
 
-        void init();
+        void Init();
+        void Update();
         Measurement GetMeasurement();
         void GetMeasurement(float *acc, float *gyro, float *temp);
 
@@ -65,6 +66,7 @@ namespace Device{
         BMI088& operator=(const BMI088&) = delete;
 
         Raw_data readRawData();
+        Measurement tmp_measurement{};
 
         static void writeReg(Sensor_cfg info, uint8_t reg, uint8_t data);
         static uint8_t readReg(Sensor_cfg info, uint8_t reg);
