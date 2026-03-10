@@ -3,15 +3,12 @@
 
 using namespace MotionFSM;
 
-
-
 [[noreturn]] void MotionControlTask(void const * argument){
 
-    DBus &hDbus = DBus::getInstance();
     INS_Device &hINS = INS_Device::getInstance();
+    RemoteContrlMidware::RemoteContrlMidwareInit();
 
     osDelay(200);
-    fsm::sm<motionTransition> motion_fsm;
     MotionFSM::StateLoopArg input_sta{
         ChassisControl::setMove({{0,0,0}}),
         GimbalControl::getYawState(),
@@ -21,29 +18,7 @@ using namespace MotionFSM;
 
     while (true){
 
-        const volatile DBus::RCState* sta = hDbus.getState();
-
-        uint8_t linLeft = sta->s[1];
-        uint8_t linRight = sta->s[0];
-        static short last_sta;
-        short sta_check = (short)(linLeft) << 8 | linRight;
-
-        if(InitFlag.InitNI){
-
-        }
-        else{
-            if(motion_fsm.is(fsm::state<Init>))
-                motion_fsm.process_event(InitComplete{});
-            else if(last_sta != sta_check){
-                last_sta = sta_check;
-                if(linLeft == 1)motion_fsm.process_event(IntoIdle{});
-                else if(linLeft == 3)motion_fsm.process_event(IntoChassisLead{});
-                else if(linLeft==2 && linRight==3)motion_fsm.process_event(IntoGimbalLead{});
-                else if(linLeft==2 && linRight==1)motion_fsm.process_event(IntoAutoAim{});
-                else if(linLeft==2 && linRight==2)motion_fsm.process_event(IntoAutoRotate{});
-            }
-        }
-
+        auto CMD = RemoteContrlMidware::RemoteContrlMidwareLoop();
 
         input_sta.YawSta = GimbalControl::getYawState();
         input_sta.PithSta = GimbalControl::getPithState();
