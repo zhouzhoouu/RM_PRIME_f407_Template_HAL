@@ -3,6 +3,8 @@
 
 using namespace MotionParameter;
 
+#define InInterval(val, center, R) ( (val) < ((center)+(R)) ) && ( (val) > ((center)-(R)) )
+
 namespace GimbalControl{
 
     DM4310 YawMotor(&hcan1, 1, PI*10.f, 30.f, 10.f);
