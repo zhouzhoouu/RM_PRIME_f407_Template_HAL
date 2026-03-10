@@ -5,7 +5,7 @@ using namespace MotionFSM;
 using namespace MotionParameter;
 
 static float Abs_deg_recode = 0;
-StateLoopArg MotionFSM::AutoRotateLoop(const volatile DBus::RCState* RCsta, INS_Device& hINS, const StateLoopArg& cur_sta){
+StateLoopArg MotionFSM::AutoRotateLoop(const volatile RCcmd_t* RCsta, INS_Device& hINS, const StateLoopArg& cur_sta){
     if(InitFlag.AutoRotateNI){
         Abs_deg_recode = hINS.getAngle().yaw;
         InitFlag.AutoRotateNI = false;
@@ -31,13 +31,16 @@ StateLoopArg MotionFSM::AutoRotateLoop(const volatile DBus::RCState* RCsta, INS_
     float real_omega = AbsMove.omega * GIMBAL_K_LEAD_OMEGA;
     Abs_deg_recode = GimbalControl::angleMod(Abs_deg_recode +  real_omega* T_SAMPLE);
 
-    float ref_ang = (float) RCsta->ch[1] * GIMBAL_K_CH_PITH;
+    float pitch_omega = (float) RCsta->ch[1] * GIMBAL_K_CH_PITH;
+    float taget_pitch = GimbalControl::angleMod(cur_sta.taget_pitch + pitch_omega*T_SAMPLE);
 
     float taget_pos = cur_sta.YawSta.pos + Abs_deg_recode - hINS.getAngle().yaw;
+
     StateLoopArg rel = {
             target_state,
             {{taget_pos,  -cur_sta.ChassisSta.omega * GIMBAL_K_OMEGA_FORWARD}},
-            {{ref_ang, 0}}
+            {{taget_pitch, pitch_omega}},
+            taget_pitch
     };
 
 

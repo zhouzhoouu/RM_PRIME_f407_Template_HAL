@@ -18,6 +18,7 @@ StateLoopArg MotionFSM::InitLoop(const volatile DBus::RCState* RCsta, INS_Device
     return {
         {{0,0,0}},
         {{cur_sta.YawSta.pos,5}},
-        {{0,0}}
+            cur_sta.PithSta,
+            cur_sta.taget_pitch
     };
 }

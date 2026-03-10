@@ -3,10 +3,16 @@
 
 using namespace MotionFSM;
 
-StateLoopArg MotionFSM::IdleLoop(const volatile DBus::RCState*, INS_Device&, const StateLoopArg& cur_sta){
+StateLoopArg MotionFSM::IdleLoop(const volatile RCcmd_t*, INS_Device&, const StateLoopArg& cur_sta){
     if(InitFlag.IdleNI){
         InitFlag.IdleNI = false;
     }
 
-    return cur_sta;
+
+    return {
+            {{0,0,0}},
+            {{cur_sta.YawSta.pos,0}},
+            {{cur_sta.PithSta.pos,0}},
+            cur_sta.taget_pitch
+    };
 }
