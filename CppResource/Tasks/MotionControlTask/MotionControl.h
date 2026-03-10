@@ -5,6 +5,7 @@
 #include "DJiMotorGroup.h"
 #include "SupCap.h"
 #include "Referee.h"
+#include "RefereeType.h"
 #include "INS_Device.h"
 #include "DM4310.h"
 #include "DeltaPID.h"
