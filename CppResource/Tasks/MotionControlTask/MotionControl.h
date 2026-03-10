@@ -55,6 +55,9 @@ namespace MotionParameter{
 
 namespace ChassisControl{
 
+    void NotifyPowerSate(bool isPowerOn);
+    float GetPower();
+
     union MoveState{
         struct {
             float vx;
@@ -87,6 +90,9 @@ namespace GimbalControl{
         };
         float data[2];
     };
+
+    void NotifyPowerSate(bool isPowerOn);
+
     //将角度规范化到 -PI 到 PI
     float angleMod(float angle);
 
