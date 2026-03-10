@@ -39,30 +39,33 @@ using namespace MotionFSM;
 
 
 //SupCap supCap(&hcan1);
+
 Referee &hreferee = Referee::getInstance();
+#include "ui.h"
 
 [[noreturn]] void DebugTask(void const * argument){
 
-    DBus &hDbus = DBus::getInstance();
-    INS_Device &hINS = INS_Device::getInstance();
-    using namespace RefereeType;
+//    VT03 &hVT03 = VT03::getInstance();
+//    HAL_UART_Init(&huart6);
 
+    ui_remove_g_Ungroup();
+    ui_init_g_Ungroup();
 
     while (true){
-
-        auto sta = hDbus.getState();
-//        supCap.SetRestEng(hreferee.getRefereeInfo<RefereeType::PowerHeatData>().chassis_power_buffer);
+//        if(ui_g_Ungroup_engbar->end_x > ui_g_Ungroup_engbar->start_x)
+//            ui_g_Ungroup_engbar->end_x--;
+        ui_g_Ungroup_engbar->start_x = 500;
+        ui_update_g_Ungroup();
 
         float pack[5];
-        pack[1] = hDbus.getState()->ch[2];
-//        pack[0] = hreferee.getRefereeInfo<PowerHeatData>().reserved;
-//        //pack[1] = hreferee.getRefereeInfo<PowerHeatData>().chassis_power_buffer;
-//        pack[1] = supCap.getPower();
-//        pack[2] = hreferee.getRefereeInfo<PowerHeatData>().reserved - supCap.getPower();
-//        pack[0] = hreferee.getRefereeInfo<PowerHeatData>().shooter_id1_17mm_cooling_heat;
-        pack[0] = hINS.getAngle().pitch * 180 / GimbalControl::PI;
 
-        Debug::print_vofa(pack, 3);
+        pack[0] = hreferee.getRefereeInfo<RefereeType::PowerHeatData>().chassis_power_buffer;
+        pack[1] = ChassisControl::GetPower();
+        pack[2] = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_gimbal_output;
+        pack[3] = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_chassis_output;
+        pack[4] = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_shooter_output;
+
+        Debug::print_vofa(pack, 5);
 
         osDelay(50);
     }
