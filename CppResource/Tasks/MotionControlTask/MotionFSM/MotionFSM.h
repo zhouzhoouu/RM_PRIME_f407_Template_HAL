@@ -3,12 +3,15 @@
 
 #include "MotionControl.h"
 
+using RCcmd_t = RemoteContrlMidware::VirtualRC_CMD;
+
 namespace MotionFSM{
 
     struct StateLoopArg{
         ChassisControl::MoveState ChassisSta;
         GimbalControl::AxisState YawSta;
         GimbalControl::AxisState PithSta;
+        float taget_pitch;
     };
 
     using StateHandler = StateLoopArg(*)(const volatile DBus::RCState*, INS_Device&, const StateLoopArg&);
