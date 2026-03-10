@@ -5,7 +5,7 @@ using namespace MotionFSM;
 using namespace MotionParameter;
 
 static float Abs_deg_recode = 0;
-StateLoopArg MotionFSM::GimbalLeadLoop(const volatile DBus::RCState* RCsta, INS_Device& hINS, const StateLoopArg& cur_sta){
+StateLoopArg MotionFSM::GimbalLeadLoop(const volatile RCcmd_t* RCsta, INS_Device& hINS, const StateLoopArg& cur_sta){
 
     if(InitFlag.GimbalLeadNI){
         Abs_deg_recode = hINS.getAngle().yaw;
@@ -21,7 +21,8 @@ StateLoopArg MotionFSM::GimbalLeadLoop(const volatile DBus::RCState* RCsta, INS_
              -(float)RCsta->ch[2] * CHASSIS_K_CHY,
              -(float)RCsta->ch[0] * CHASSIS_K_OMEGA}
     };
-    float ref_ang = (float) RCsta->ch[1] * GIMBAL_K_CH_PITH;
+    float pitch_omega = (float) RCsta->ch[1] * GIMBAL_K_CH_PITH;
+    float taget_pitch = GimbalControl::angleMod(cur_sta.taget_pitch + pitch_omega*T_SAMPLE);
 
     float chassis_omega_ref = 0;
     float dpos = GimbalControl::angleMod(cur_sta.YawSta.pos - GimbalControl::YawZero);
@@ -42,10 +43,12 @@ StateLoopArg MotionFSM::GimbalLeadLoop(const volatile DBus::RCState* RCsta, INS_
 
     auto YawData = GimbalControl::getYawState();
     float taget_pos = GimbalControl::angleMod(YawData.pos + Abs_deg_recode - hINS.getAngle().yaw);
+
     StateLoopArg rel = {
             target_state,
             {{taget_pos, -cur_sta.ChassisSta.omega * GIMBAL_K_OMEGA_FORWARD}},
-            {{ref_ang, 0}}
+            {{taget_pitch, pitch_omega}},
+            taget_pitch
     };
 
 
