@@ -9,7 +9,7 @@
 #include "DM4310.h"
 #include "DeltaPID.h"
 #include "DBus.h"
-#include "boost/sml.hpp"
+#include "VT03.h"
 
 namespace fsm = boost::sml;
 using namespace Device;
