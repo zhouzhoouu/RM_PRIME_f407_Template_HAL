@@ -16,7 +16,7 @@ using namespace Device;
 using namespace Component;
 
 namespace MotionParameter{
-    static float constexpr T_SAMPLE = 0.001f; //1ms
+    static float constexpr T_SAMPLE = 0.002f; //1ms
 
     static float constexpr RC_MAX_INPUT = 660.f;
 

@@ -54,6 +54,7 @@ using namespace MotionFSM;
         input_sta.ChassisSta = ChassisControl::setMove(output_sta.ChassisSta);
 
         osDelay(1);
+        osDelay(2);
     }
 }
 
