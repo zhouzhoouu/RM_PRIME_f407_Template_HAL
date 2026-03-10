@@ -7,13 +7,14 @@ using namespace TriggerControl;
 [[noreturn]] void ShootTask(void const * argument){
 
     DBus &hDbus = DBus::getInstance();
+    VT03 &hVT03 = VT03::getInstance();
 
     while (true){
 
-        short tin = hDbus.getState()->ch[4];
-        tin = -tin;
+        short tin = -hDbus.getState()->ch[4] + hVT03.getState()->wheel;
 
         ShootFSMLoop(tin);
+
         bool isFribOpened = getIsFribOpened();
         bool isZeroCross = getIsZeroCross();
 
