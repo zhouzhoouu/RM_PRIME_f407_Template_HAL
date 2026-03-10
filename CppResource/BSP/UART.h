@@ -3,6 +3,7 @@
 
 #define UART3_RX_BUF_LEN 36
 #define UART6_RX_BUF_LEN 256
+#define UART1_RX_BUF_LEN 42
 
 namespace BSP{
 

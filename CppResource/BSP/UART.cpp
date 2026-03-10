@@ -1,12 +1,14 @@
 #include "UART.h"
 #include "main_cpp.h"
 #include "DBus.h"
+#include "VT03.h"
 #include "Referee.h"
 
 using namespace BSP;
 
 static uint8_t UART3_DMA_BUF[2][UART3_RX_BUF_LEN];
 static uint8_t UART6_DMA_BUF[2][UART6_RX_BUF_LEN];
+static uint8_t UART1_DMA_BUF[2][UART1_RX_BUF_LEN];
 
 static void UART3_Init(uint8_t *rx1_buf, uint8_t *rx2_buf, uint16_t dma_buf_num)
 {
@@ -87,28 +89,76 @@ static void UART6_Init(uint8_t *rx1_buf, uint8_t *rx2_buf, uint16_t dma_buf_num)
     hdma_usart6_tx.Instance->PAR = (uint32_t) & (USART6->DR);//串口发送寄存器地址
 }
 
-void BSP::UART_UserInit(){
 
-    Device::DBus::getInstance(); //初始化DBus
-    UART6_Init(UART6_DMA_BUF[0],UART6_DMA_BUF[1],UART6_RX_BUF_LEN);
-    UART3_Init(UART3_DMA_BUF[0],UART3_DMA_BUF[1],UART3_RX_BUF_LEN);
+static void UART1_Init(uint8_t *rx1_buf, uint8_t *rx2_buf, uint16_t dma_buf_num)
+{
+
+    DMA_HandleTypeDef hdma_usart1_rx = *(huart1.hdmarx);
+
+    SET_BIT(huart1.Instance->CR3, USART_CR3_DMAR);//使能DMA串口接收
+    __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE); //使能空闲中断
+
+    __HAL_DMA_DISABLE(&hdma_usart1_rx);
+    while(hdma_usart1_rx.Instance->CR & DMA_SxCR_EN)
+    {
+        __HAL_DMA_DISABLE(&hdma_usart1_rx);
+    }//等待失能DMA完成
+
+    hdma_usart1_rx.Instance->PAR = (uint32_t) & (USART1->DR); //串口接收寄存器地址
+    hdma_usart1_rx.Instance->M0AR = (uint32_t)(rx1_buf);//内存缓冲区1
+    hdma_usart1_rx.Instance->M1AR = (uint32_t)(rx2_buf);//内存缓冲区2
+
+    hdma_usart1_rx.Instance->NDTR = dma_buf_num; //数据长度
+    SET_BIT(hdma_usart1_rx.Instance->CR, DMA_SxCR_DBM); //使能双缓冲区
+    __HAL_DMA_ENABLE(&hdma_usart1_rx);//使能DMA
 }
 
 
+void BSP::UART_UserInit(){
+
+    Device::VT03::getInstance(); //初始化VT03
+    Device::DBus::getInstance(); //初始化Referee
+    Device::Referee::getInstance(); //初始化DBus
+
+    UART6_Init(UART6_DMA_BUF[0],UART6_DMA_BUF[1],UART6_RX_BUF_LEN);
+    UART3_Init(UART3_DMA_BUF[0],UART3_DMA_BUF[1],UART3_RX_BUF_LEN);
+    UART1_Init(UART1_DMA_BUF[0],UART1_DMA_BUF[1],UART1_RX_BUF_LEN);
+}
+
+
+extern "C" void USART1_IDEL_IRQHandler(UART_HandleTypeDef *huart){
+    static uint16_t this_time_rx_len = 0;
+    DMA_HandleTypeDef* hdma_usart1_rx = huart->hdmarx;
+
+    __HAL_DMA_DISABLE(hdma_usart1_rx); //失能DMA
+    this_time_rx_len = UART1_RX_BUF_LEN - hdma_usart1_rx->Instance->NDTR;//获取接收数据长度
+    hdma_usart1_rx->Instance->NDTR = UART1_RX_BUF_LEN;//重新设定数据长度
+    uint32_t target_index = (hdma_usart1_rx->Instance->CR & DMA_SxCR_CT) ? 1 : 0;//获取当前缓冲区
+    hdma_usart1_rx->Instance->CR ^= DMA_SxCR_CT; //反转缓冲区
+    __HAL_DMA_ENABLE(hdma_usart1_rx);//使能DMA
+
+    if(this_time_rx_len == Device::VT03::VT03_FRAME_LENGTH)
+    {
+        Device::VT03 &hVT03 = Device::VT03::getInstance();
+        hVT03.receiveMessage(UART1_DMA_BUF[target_index]);//解码数据
+    }
+
+
+}
 
 extern "C" void USART3_IDEL_IRQHandler(UART_HandleTypeDef *huart){
 
     //__HAL_UART_CLEAR_PEFLAG(&huart3);
 
     static uint16_t this_time_rx_len = 0;
-    DMA_HandleTypeDef hdma_usart3_rx = *(huart->hdmarx);
+    DMA_HandleTypeDef* hdma_usart3_rx = huart->hdmarx;
 
-    __HAL_DMA_DISABLE(&hdma_usart3_rx); //失能DMA
-    this_time_rx_len = UART3_RX_BUF_LEN - hdma_usart3_rx.Instance->NDTR;//获取接收数据长度
-    hdma_usart3_rx.Instance->NDTR = UART3_RX_BUF_LEN;//重新设定数据长度
-    uint32_t target_index = (hdma_usart3_rx.Instance->CR & DMA_SxCR_CT) ? 1 : 0;//获取当前缓冲区
-    hdma_usart3_rx.Instance->CR ^= DMA_SxCR_CT; //反转缓冲区
-    __HAL_DMA_ENABLE(&hdma_usart3_rx);//使能DMA
+    __HAL_DMA_DISABLE(hdma_usart3_rx); //失能DMA
+    this_time_rx_len = UART3_RX_BUF_LEN - hdma_usart3_rx->Instance->NDTR;//获取接收数据长度
+    hdma_usart3_rx->Instance->NDTR = UART3_RX_BUF_LEN;//重新设定数据长度
+    uint32_t target_index = (hdma_usart3_rx->Instance->CR & DMA_SxCR_CT) ? 1 : 0;//获取当前缓冲区
+    hdma_usart3_rx->Instance->CR ^= DMA_SxCR_CT; //反转缓冲区
+    __HAL_DMA_ENABLE(hdma_usart3_rx);//使能DMA
 
     if(this_time_rx_len == Device::DBus::DBUS_FRAME_LENGTH)
     {
@@ -128,14 +178,14 @@ extern "C" void USART3_IDEL_IRQHandler(UART_HandleTypeDef *huart){
 extern "C" void USART6_IDEL_IRQHandler(UART_HandleTypeDef *huart){
 
     static uint16_t this_time_rx_len = 0;
-    DMA_HandleTypeDef hdma_usart6_rx = *(huart->hdmarx);
+    DMA_HandleTypeDef* hdma_usart6_rx = huart->hdmarx;
 
-    __HAL_DMA_DISABLE(&hdma_usart6_rx); //失能DMA
-    this_time_rx_len = UART6_RX_BUF_LEN - hdma_usart6_rx.Instance->NDTR;//获取接收数据长度
-    hdma_usart6_rx.Instance->NDTR = UART6_RX_BUF_LEN;//重新设定数据长度
-    uint32_t target_index = (hdma_usart6_rx.Instance->CR & DMA_SxCR_CT) ? 1 : 0;//获取当前缓冲区
-    hdma_usart6_rx.Instance->CR ^= DMA_SxCR_CT; //反转缓冲区
-    __HAL_DMA_ENABLE(&hdma_usart6_rx);//使能DMA
+    __HAL_DMA_DISABLE(hdma_usart6_rx); //失能DMA
+    this_time_rx_len = UART6_RX_BUF_LEN - hdma_usart6_rx->Instance->NDTR;//获取接收数据长度
+    hdma_usart6_rx->Instance->NDTR = UART6_RX_BUF_LEN;//重新设定数据长度
+    uint32_t target_index = (hdma_usart6_rx->Instance->CR & DMA_SxCR_CT) ? 1 : 0;//获取当前缓冲区
+    hdma_usart6_rx->Instance->CR ^= DMA_SxCR_CT; //反转缓冲区
+    __HAL_DMA_ENABLE(hdma_usart6_rx);//使能DMA
 
     if(this_time_rx_len >= Device::Referee::MIN_FRAME_SIZE)
     {
