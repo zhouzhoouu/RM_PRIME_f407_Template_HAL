@@ -18,12 +18,12 @@ namespace Device{
     }
 
     float SupCap::getPower() const{
-        return rxData.power;
+        return rxData.P_measured;
     }
 
     void SupCap::SetRestEng(float energy){
         TxData txData{};
-        txData.restEng = energy;
+        txData.E_buffer = energy;
         uint8_t len = 0x08;
         sendMessage(txData.datas, len);
     }

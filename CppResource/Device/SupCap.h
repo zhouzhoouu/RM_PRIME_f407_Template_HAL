@@ -20,16 +20,22 @@ class SupCap: public BSP::InterfaceCAN{
     private:
         union RxData{
             struct {
-                float power;
-                uint32_t reserved;
+                float P_measured;
+                uint8_t Rest_energy;
+                uint8_t reserve1;
+                uint8_t reserve2;
+                uint8_t Err_code;
             };
             uint8_t datas[8];
         };
 
         union TxData{
             struct {
-                float restEng;
-                uint32_t reserved;
+                float E_buffer;
+                uint8_t Ref_Power_Limit;
+                uint8_t is_charging;
+                uint8_t reserve2;
+                uint8_t reserve3;
             };
             uint8_t datas[8];
         };
