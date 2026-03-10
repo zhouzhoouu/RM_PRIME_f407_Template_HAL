@@ -7,8 +7,20 @@ namespace Device{
 
     class IST8310 {
     public:
+        union MegMeasurement {
+            struct {
+                float x;
+                float y;
+                float z;
+            };
+            float data[3];
+        };
+
         static IST8310& getInstance();
-        void init();
+        bool Init();
+        void Update();
+        void GetMeasurement(float *mag_data);
+        MegMeasurement GetMeasurement();
 
     private:
         IST8310() = default;
@@ -33,7 +45,11 @@ namespace Device{
                         {0x0A, 0x0B, 0x04}
                 };
 
-        uint8_t read_single_reg(uint8_t reg);
+        MegMeasurement tmp_measurement{};
+
+        static uint8_t read_single_reg(uint8_t reg);
+        static void write_single_reg(uint8_t reg, uint8_t data);
+        static void read_muli_reg(uint8_t reg, uint8_t *buf, uint8_t len);
 
     };
 
