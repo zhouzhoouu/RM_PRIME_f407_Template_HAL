@@ -34,7 +34,7 @@ void NanoMsg::sendMsg(float yaw, float pitch){
     for (int j = 0; j < 2; j++)
     {
         uint8_t* float_data_ptr = (uint8_t*)&data_array[j];
-        for (int i = 0; i < sizeof(float); i++)
+        for (uint32_t i = 0; i < sizeof(float); i++)
         {
             sendBuff[3 + j * sizeof(float) + i] = float_data_ptr[i];
         }
