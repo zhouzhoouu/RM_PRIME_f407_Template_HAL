@@ -14,33 +14,35 @@ namespace MotionFSM{
         float taget_pitch;
     };
 
-    using StateHandler = StateLoopArg(*)(const volatile DBus::RCState*, INS_Device&, const StateLoopArg&);
+    using StateHandler = StateLoopArg(*)(const volatile RCcmd_t*, INS_Device&, const StateLoopArg&);
     // 各 Loop 函数需统一 StateHandler 签名
-    StateLoopArg InitLoop(const volatile DBus::RCState*, INS_Device&, const StateLoopArg&);
-    StateLoopArg IdleLoop(const volatile DBus::RCState*, INS_Device&, const StateLoopArg&);
-    StateLoopArg ChassisLeadLoop(const volatile DBus::RCState*, INS_Device&, const StateLoopArg&);
-    StateLoopArg GimbalLeadLoop(const volatile DBus::RCState*, INS_Device&, const StateLoopArg&);
-    StateLoopArg AutoAimLoop(const volatile DBus::RCState*, INS_Device&, const StateLoopArg&);
-    StateLoopArg AutoRotateLoop(const volatile DBus::RCState*, INS_Device&, const StateLoopArg&);
+    StateLoopArg InitLoop(const volatile RCcmd_t*, INS_Device&, const StateLoopArg&);
+    StateLoopArg IdleLoop(const volatile RCcmd_t*, INS_Device&, const StateLoopArg&);
+    StateLoopArg ChassisLeadLoop(const volatile RCcmd_t*, INS_Device&, const StateLoopArg&);
+    StateLoopArg GimbalLeadLoop(const volatile RCcmd_t*, INS_Device&, const StateLoopArg&);
+    StateLoopArg AutoAimLoop(const volatile RCcmd_t*, INS_Device&, const StateLoopArg&);
+    StateLoopArg AutoRotateLoop(const volatile RCcmd_t*, INS_Device&, const StateLoopArg&);
 
     inline StateHandler CurrentHandler = InitLoop;
     constexpr StateLoopArg DefaultStateArg = {
             {{0,0,0}},
             {{0,0}},
-            {{0,0}}
+            {{0,0}},
+            0.f
     };
 
     struct Flag{
         bool InitNI,IdleNI,ChassisLeadNI,GimbalLeadNI,AutoAimNI,AutoRotateNI;
     };
+
     volatile inline Flag InitFlag = {
             true,
             true,
             true,
             true,
             true,
-            true}
-            ;
+            true
+    };
 
     //状态定义
     struct Init{};
