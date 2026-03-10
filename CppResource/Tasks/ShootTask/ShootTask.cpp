@@ -23,7 +23,7 @@ using namespace TriggerControl;
             if(tin < 0) tin = 0;
 
             if(isZeroCross)
-                triger_speed = 9.f*tin;
+                triger_speed = 6.f*tin;
             else
                 triger_speed = 0.f;
 
