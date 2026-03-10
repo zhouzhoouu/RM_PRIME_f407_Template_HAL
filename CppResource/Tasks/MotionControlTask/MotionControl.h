@@ -74,6 +74,31 @@ namespace ChassisControl{
 }
 
 
+namespace RemoteContrlMidware{
+
+    struct VirtualRC_CMD{
+        short ch[4];
+        bool OD_key;
+
+        VirtualRC_CMD operator+(const VirtualRC_CMD& other) const
+        {
+            VirtualRC_CMD rel{};
+            rel.ch[0] = other.ch[0] + ch[0];
+            rel.ch[1] = other.ch[1] + ch[1];
+            rel.ch[2] = other.ch[2] + ch[2];
+            rel.ch[3] = other.ch[3] + ch[3];
+
+            rel.OD_key = other.OD_key | OD_key;
+
+            return rel;
+        }
+    };
+
+    void RemoteContrlMidwareInit();
+    VirtualRC_CMD RemoteContrlMidwareLoop();
+
+}
+
 namespace GimbalControl{
 
     static float constexpr PI = 3.141592653f;
