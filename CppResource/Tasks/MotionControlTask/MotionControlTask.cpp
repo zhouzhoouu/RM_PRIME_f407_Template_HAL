@@ -27,6 +27,8 @@ using namespace MotionFSM;
 
         GimbalControl::setYawRelative(output_sta.YawSta);
         GimbalControl::setPithRelative(output_sta.PithSta);
+
+        ChassisControl::set_supcap(CMD.OD_key);
         input_sta.ChassisSta = ChassisControl::setMove(output_sta.ChassisSta);
 
         if(MotionParameter::GIMBAL_PITCH_LOWER > output_sta.taget_pitch) output_sta.taget_pitch = MotionParameter::GIMBAL_PITCH_LOWER;
@@ -38,34 +40,25 @@ using namespace MotionFSM;
 }
 
 
-//SupCap supCap(&hcan1);
-
-Referee &hreferee = Referee::getInstance();
-#include "ui.h"
 
 [[noreturn]] void DebugTask(void const * argument){
 
-//    VT03 &hVT03 = VT03::getInstance();
-//    HAL_UART_Init(&huart6);
-
-    ui_remove_g_Ungroup();
-    ui_init_g_Ungroup();
+    Referee &hreferee = Referee::getInstance();
+    VT03 &hVT03 = VT03::getInstance();
 
     while (true){
-//        if(ui_g_Ungroup_engbar->end_x > ui_g_Ungroup_engbar->start_x)
-//            ui_g_Ungroup_engbar->end_x--;
-        ui_g_Ungroup_engbar->start_x = 500;
-        ui_update_g_Ungroup();
 
-        float pack[5];
+        float pack[8];
 
         pack[0] = hreferee.getRefereeInfo<RefereeType::PowerHeatData>().chassis_power_buffer;
         pack[1] = ChassisControl::GetPower();
         pack[2] = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_gimbal_output;
         pack[3] = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_chassis_output;
         pack[4] = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_shooter_output;
+        pack[5] = hVT03.getState()->wheel;
+        pack[6] = (float)ChassisControl::GetCapRest();
 
-        Debug::print_vofa(pack, 5);
+        Debug::print_vofa(pack, 8);
 
         osDelay(50);
     }

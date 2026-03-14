@@ -61,6 +61,8 @@ namespace ChassisControl{
 
     void NotifyPowerSate(bool isPowerOn);
     float GetPower();
+    uint32_t GetCapRest();
+    void set_supcap(bool enable);
 
     union MoveState{
         struct {
