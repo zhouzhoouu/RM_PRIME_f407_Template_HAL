@@ -115,12 +115,13 @@ namespace Device{
     public:
 
         static constexpr uint32_t MIN_FRAME_SIZE = 9;
+        static constexpr uint32_t MAX_TIME_COUNT = 500;
 
 
         static Referee& getInstance();
 
         void init();
-        void Send(uint8_t* data, uint8_t len);
+//        void Send(uint8_t* data, uint8_t len);
 
         /// 将数据存入裁判系统串口解析FIFO
         /// @param data ///数据指针
@@ -135,6 +136,7 @@ namespace Device{
         }
 
         void ProcessData();
+        bool RefereeExist() const;
 
     private:
         Referee() = default;
@@ -145,6 +147,7 @@ namespace Device{
         boost::sml::sm<RefereeFSM::depackTransition> depackFSM{depackCtx};
         etl::queue<uint8_t, 256> DataFifo;
         RefereeType::RefereeTupleType RefereeTuple;
+        uint32_t referee_time_out_count = MAX_TIME_COUNT;
 
         void packetWrite(uint16_t ID, uint8_t* data, uint16_t len);
     };

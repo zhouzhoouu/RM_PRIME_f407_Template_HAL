@@ -32,7 +32,7 @@ namespace ShootFSM{
             }
 
         } else{
-            if(tin > 650){
+            if(tin > 580){
                 FirbCounter[0]++;
                 if(FirbCounter[0] >= TOPEN){
                     isFribOpened = true;

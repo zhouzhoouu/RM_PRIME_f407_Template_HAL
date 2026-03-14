@@ -17,6 +17,8 @@ void Referee::init() {
 
 uint32_t Referee::pushData(uint8_t* data, uint32_t len){
 
+    referee_time_out_count = 0;
+
     if (DataFifo.available()<len) {
         len = DataFifo.available();
     }
@@ -34,6 +36,8 @@ void Referee::packetWrite(uint16_t ID, uint8_t* data, uint16_t len){
 
 void Referee::ProcessData(){
 
+    if(referee_time_out_count <= MAX_TIME_COUNT) referee_time_out_count++;
+
     using namespace boost::sml;
 
     while (!DataFifo.empty()){
@@ -48,4 +52,8 @@ void Referee::ProcessData(){
 
         DataFifo.pop();
     }
+}
+
+bool Referee::RefereeExist() const{
+    return referee_time_out_count < MAX_TIME_COUNT;
 }

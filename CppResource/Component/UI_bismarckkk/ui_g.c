@@ -12,15 +12,16 @@ ui_5_frame_t ui_g_Ungroup_0;
 ui_interface_line_t *ui_g_Ungroup_engbar_bg = (ui_interface_line_t*)&(ui_g_Ungroup_0.data[0]);
 ui_interface_line_t *ui_g_Ungroup_engbar = (ui_interface_line_t*)&(ui_g_Ungroup_0.data[1]);
 ui_interface_number_t *ui_g_Ungroup_NewNumber = (ui_interface_number_t*)&(ui_g_Ungroup_0.data[2]);
+ui_interface_round_t *ui_g_Ungroup_NewRound = (ui_interface_round_t*)&(ui_g_Ungroup_0.data[3]);
 
 void _ui_init_g_Ungroup_0() {
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 4; i++) {
         ui_g_Ungroup_0.data[i].figure_name[0] = 0;
         ui_g_Ungroup_0.data[i].figure_name[1] = 0;
         ui_g_Ungroup_0.data[i].figure_name[2] = i + 0;
         ui_g_Ungroup_0.data[i].operate_type = 1;
     }
-    for (int i = 3; i < 5; i++) {
+    for (int i = 4; i < 5; i++) {
         ui_g_Ungroup_0.data[i].operate_type = 0;
     }
 
@@ -52,7 +53,16 @@ void _ui_init_g_Ungroup_0() {
     ui_g_Ungroup_NewNumber->start_y = 266;
     ui_g_Ungroup_NewNumber->width = 2;
     ui_g_Ungroup_NewNumber->font_size = 20;
-    ui_g_Ungroup_NewNumber->number = 12345;
+    ui_g_Ungroup_NewNumber->number = 145;
+
+    ui_g_Ungroup_NewRound->figure_type = 2;
+    ui_g_Ungroup_NewRound->operate_type = 1;
+    ui_g_Ungroup_NewRound->layer = 0;
+    ui_g_Ungroup_NewRound->color = 5;
+    ui_g_Ungroup_NewRound->start_x = 263;
+    ui_g_Ungroup_NewRound->start_y = 557;
+    ui_g_Ungroup_NewRound->width = 20;
+    ui_g_Ungroup_NewRound->r = 91;
 
 
     ui_proc_5_frame(&ui_g_Ungroup_0);
@@ -60,7 +70,7 @@ void _ui_init_g_Ungroup_0() {
 }
 
 void _ui_update_g_Ungroup_0() {
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 4; i++) {
         ui_g_Ungroup_0.data[i].operate_type = 2;
     }
 
@@ -69,7 +79,7 @@ void _ui_update_g_Ungroup_0() {
 }
 
 void _ui_remove_g_Ungroup_0() {
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 4; i++) {
         ui_g_Ungroup_0.data[i].operate_type = 3;
     }
 
