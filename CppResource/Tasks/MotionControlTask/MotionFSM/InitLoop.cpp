@@ -24,7 +24,7 @@ StateLoopArg MotionFSM::InitLoop(const volatile RCcmd_t*, INS_Device&, const Sta
         };
     } else if(sta == GPIO_PIN_SET && last_sta == GPIO_PIN_RESET){
 
-        float rad_bias = GimbalControl::PI*(1/180.f) * (21.f - 90); //10度偏差
+        float rad_bias = GimbalControl::PI*(1/180.f) * (18.f - 90); //10度偏差
         GimbalControl::YawZero = GimbalControl::angleMod(  rad_bias+GimbalControl::getYawState().pos);
         InitFlag.InitNI = false;
     }
