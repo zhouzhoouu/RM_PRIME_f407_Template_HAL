@@ -66,9 +66,28 @@ namespace ChassisControl{
         return supCap.getPower();
     }
 
+    uint32_t GetCapRest(){
+        return supCap.getRest();
+    }
+
+    void set_supcap(bool enable){
+        supCap.SetState(enable);
+    }
+
     //实测omega=1980时，实际转动速度2rad/s左右(英雄机器人)
     // omega=900时，实际转动速度约1rad/s(云台跟随)
     MoveState setMove(MoveState target_state){
+
+        using namespace RefereeType;
+        auto&  hreferee = Referee::getInstance();
+        if(hreferee.RefereeExist()){
+            float power_buffer = hreferee.getRefereeInfo<PowerHeatData>().chassis_power_buffer;
+            float power_limit = hreferee.getRefereeInfo<GameRobotState>().chassis_power_limit;
+            bool power_on = hreferee.getRefereeInfo<GameRobotState>().power_management_chassis_output;
+            supCap.SetParameter(power_buffer, power_limit, power_on);
+        } else{
+            supCap.SetParameter(60.f, 40.f);
+        }
 
         if(!isPowerOn){
             short tc[] = {0,0,0,0};
@@ -84,7 +103,6 @@ namespace ChassisControl{
         }
         MotionCalOmnidBackward(motor_speed, &measure_state);
 
-        supCap.SetRestEng(60.f);
 
         MoveState dv{{target_state.vx - measure_state.vx,
                    target_state.vy - measure_state.vy,
