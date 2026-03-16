@@ -49,7 +49,7 @@ namespace TriggerControl{
 
         float error = dir*target_speed - motor_speed;
         integral += error;
-        float i_tor = integral * 0.01;
+        float i_tor = integral * 0.03f;
 
         if(i_tor > i_tor_limit)
             i_tor = i_tor_limit;

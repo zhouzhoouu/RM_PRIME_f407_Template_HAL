@@ -11,7 +11,7 @@ namespace GimbalControl{
 //    DM4310 YawMotor(&hcan1, 2);
     DM4310 PithMotor(&hcan2, 1);
 
-    float YawZero = 2.1f;
+    float YawZero = 2.9f;
     float PitchZero = 0.5f;
     static bool isPowerOn = false;
 
@@ -100,17 +100,8 @@ namespace GimbalControl{
 
     void setPithRelative(AxisState target_s){
 
-        float yaw_rad = angleMod(getYawState().pos);
-
         if(target_s.pos > GIMBAL_PITCH_UPPER) target_s.pos = GIMBAL_PITCH_UPPER;
         if(target_s.pos < GIMBAL_PITCH_LOWER) target_s.pos = GIMBAL_PITCH_LOWER;
-
-        if( InInterval(yaw_rad, 0.65f, PI/6.f + 0.1f) || InInterval(yaw_rad, 0.65f - PI, PI/6.f + 0.1f) ){
-            if(target_s.pos > 0.2f){
-                target_s.pos = 0.2f;
-                target_s.omega = 0.f;
-            }
-        }
 
         float pitch_rad = getPithState().pos;
         float error_pos = target_s.pos - pitch_rad;
