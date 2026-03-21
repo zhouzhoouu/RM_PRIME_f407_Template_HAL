@@ -3,7 +3,7 @@
 
 using namespace MotionParameter;
 
-#define InInterval(val, center, R) ( (val) < ((center)+(R)) ) && ( (val) > ((center)-(R)) )
+#define InInterval(val, center, R) (( (val) < ((center)+(R)) ) && ( (val) > ((center)-(R)) ))
 
 namespace GimbalControl{
 
