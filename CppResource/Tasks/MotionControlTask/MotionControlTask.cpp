@@ -50,11 +50,11 @@ using namespace MotionFSM;
 
         float pack[8];
 
-        pack[0] = hreferee.getRefereeInfo<RefereeType::PowerHeatData>().chassis_power_buffer;
-        pack[1] = ChassisControl::GetPower();
-        pack[2] = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_gimbal_output;
-        pack[3] = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_chassis_output;
-        pack[4] = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_shooter_output;
+        pack[0] = hreferee.getRefereeInfo<RefereeType::GameRobotState>().chassis_power_limit;
+        pack[1] = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_chassis_output;
+        pack[2] = hreferee.getRefereeInfo<RefereeType::PowerHeatData>().chassis_power_buffer;
+        pack[3] = ChassisControl::GetPower();
+        pack[4] = ChassisControl::GetMaxOutPower();
         pack[5] = hVT03.getState()->wheel;
         pack[6] = (float)ChassisControl::GetCapRest();
 

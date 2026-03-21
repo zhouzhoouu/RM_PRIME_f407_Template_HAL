@@ -21,9 +21,9 @@ namespace MotionParameter{
 
     static float constexpr RC_MAX_INPUT = 660.f;
 
-    static float constexpr CHASSIS_K_CHX = 3.5f;
-    static float constexpr CHASSIS_K_CHY = 3.5f;
-    static float constexpr CHASSIS_K_OMEGA = 3.0f;
+    static float constexpr CHASSIS_K_CHX = 7.5f;
+    static float constexpr CHASSIS_K_CHY = 7.5f;
+    static float constexpr CHASSIS_K_OMEGA = 2.5f;
     static float constexpr CHASSIS_MAX_ACCEL = 800000.f;
     static float constexpr CHASSIS_MAX_ALPHA = 800000.f;
 
@@ -53,7 +53,7 @@ namespace MotionParameter{
     static float constexpr GIMBAL_MAX_ALPHA = 12000.f;
 
     static float constexpr AUTOROTATE_MAX_OMEGA = 2400.f;
-    static float constexpr AUTOROTATE_ANGLE_BIAS = -0.3f; //rad
+    static float constexpr AUTOROTATE_ANGLE_BIAS = -1.05f; //rad
 
 }
 
@@ -62,6 +62,7 @@ namespace ChassisControl{
     void NotifyPowerSate(bool isPowerOn);
     float GetPower();
     uint32_t GetCapRest();
+    float GetMaxOutPower();
     void set_supcap(bool enable);
 
     union MoveState{

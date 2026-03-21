@@ -25,6 +25,19 @@ namespace Device{
         return rxData.Rest_energy;
     }
 
+
+    float SupCap::getMaxOutPower() const{
+        return 0.1f*(float)rxData.Max_Power;
+    }
+
+    uint8_t SupCap::getErrcode() const{
+        return rxData.Err_code;
+    }
+
+    bool SupCap::EnableDischarge() const{
+        return supcap_enable;
+    }
+
     void SupCap::SetParameter(float energy, float power_limit,bool power_on){
         TxData txData{};
         txData.E_buffer = energy;
