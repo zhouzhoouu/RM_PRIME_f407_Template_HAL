@@ -19,7 +19,7 @@ namespace ShootFSM{
     void ShootFSMLoop(short tin){
 
         if(isFribOpened){
-            if(tin < -650){
+            if(tin < -300){
                 FirbCounter[1]++;
                 if(FirbCounter[1] >= TOPEN){
                     isFribOpened = false;
