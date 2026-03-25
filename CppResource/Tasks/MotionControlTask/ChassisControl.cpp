@@ -104,7 +104,7 @@ namespace ChassisControl{
         //功率限制
         float Power_margin = power_limit;
         if(supCap.EnableDischarge() && (supCap.getErrcode() == 0))
-            Power_margin += supCap.getMaxOutPower() * 0.8f;
+            Power_margin += supCap.getMaxOutPower() * 0.7f;
         float power = supCap.getPower();
         float ref_rate = power / Power_margin;
         float k_limt = 1.0f;
