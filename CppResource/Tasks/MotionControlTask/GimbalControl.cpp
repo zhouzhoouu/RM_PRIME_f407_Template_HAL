@@ -7,12 +7,12 @@ using namespace MotionParameter;
 
 namespace GimbalControl{
 
-    DM4310 YawMotor(&hcan1, 2, 4*PI, 30.f,10.f);
+    DM4310 YawMotor(&hcan2, 1, PI, 30.f,10.f);
 //    DM4310 YawMotor(&hcan1, 2);
-    DM4310 PithMotor(&hcan2, 1);
+    DM4310 PithMotor(&hcan2, 2);
 
-    float YawZero = 2.9f;
-    float PitchZero = 0.5f;
+    float YawZero = -0.27f;
+    float PitchZero = -1.156f;
     static bool isPowerOn = false;
 
     //将角度规范化到 -PI 到 PI
