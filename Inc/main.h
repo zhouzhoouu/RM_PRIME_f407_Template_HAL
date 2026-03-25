@@ -87,9 +87,13 @@ void Error_Handler(void);
 #define INT1_ACCEL_Pin GPIO_PIN_4
 #define INT1_ACCEL_GPIO_Port GPIOC
 #define INT1_ACCEL_EXTI_IRQn EXTI4_IRQn
+#define Pitch_Relay_Pin GPIO_PIN_13
+#define Pitch_Relay_GPIO_Port GPIOE
 #define INT1_GYRO_Pin GPIO_PIN_5
 #define INT1_GYRO_GPIO_Port GPIOC
 #define INT1_GYRO_EXTI_IRQn EXTI9_5_IRQn
+#define Frib_Relay_Pin GPIO_PIN_11
+#define Frib_Relay_GPIO_Port GPIOE
 #define SPI2_CS_Pin GPIO_PIN_12
 #define SPI2_CS_GPIO_Port GPIOB
 #define CS1_GYRO_Pin GPIO_PIN_0
