@@ -41,25 +41,25 @@ using namespace MotionFSM;
 
 
 
-[[noreturn]] void DebugTask(void const * argument){
-
-    Referee &hreferee = Referee::getInstance();
-    VT03 &hVT03 = VT03::getInstance();
-
-    while (true){
-
-        float pack[8];
-
-        pack[0] = hreferee.getRefereeInfo<RefereeType::PowerHeatData>().chassis_power_buffer;
-        pack[1] = ChassisControl::GetPower();
-        pack[2] = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_gimbal_output;
-        pack[3] = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_chassis_output;
-        pack[4] = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_shooter_output;
-        pack[5] = hVT03.getState()->wheel;
-        pack[6] = (float)ChassisControl::GetCapRest();
-
-        Debug::print_vofa(pack, 8);
-
-        osDelay(50);
-    }
-}
+//[[noreturn]] void DebugTask(void const * argument){
+//
+//    Referee &hreferee = Referee::getInstance();
+//    VT03 &hVT03 = VT03::getInstance();
+//
+//    while (true){
+//
+//        float pack[8];
+//
+//        pack[0] = hreferee.getRefereeInfo<RefereeType::PowerHeatData>().chassis_power_buffer;
+//        pack[1] = ChassisControl::GetPower();
+//        pack[2] = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_gimbal_output;
+//        pack[3] = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_chassis_output;
+//        pack[4] = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_shooter_output;
+//        pack[5] = hVT03.getState()->wheel;
+//        pack[6] = (float)ChassisControl::GetCapRest();
+//
+//        Debug::print_vofa(pack, 8);
+//
+//        osDelay(50);
+//    }
+//}
