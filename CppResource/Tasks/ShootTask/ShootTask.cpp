@@ -27,7 +27,7 @@ using namespace TriggerControl;
             else
                 triger_speed = 0.f;
 
-            frib_speed = 7300;//7300.f;
+            frib_speed = 7000;//7000.f;
         }
         else{
             triger_speed = 0.f;
