@@ -35,10 +35,10 @@ namespace ChassisControl{
 
     constexpr void MotionCalOmnidForward(const MoveState& target_motion, float* motor_v_target) {
         // 直接用代数表达式（等价于对 (vx,vy) 逆时针旋转 +90° 后的映射）
-        motor_v_target[0] = -target_motion.vx + target_motion.vy + target_motion.omega;
-        motor_v_target[1] = -target_motion.vx - target_motion.vy + target_motion.omega;
-        motor_v_target[2] = target_motion.vx - target_motion.vy + target_motion.omega;
-        motor_v_target[3] = target_motion.vx + target_motion.vy + target_motion.omega;
+        motor_v_target[0] = -target_motion.vx - target_motion.vy + target_motion.omega;
+        motor_v_target[1] = -target_motion.vx + target_motion.vy + target_motion.omega;
+        motor_v_target[2] = target_motion.vx + target_motion.vy + target_motion.omega;
+        motor_v_target[3] = target_motion.vx - target_motion.vy + target_motion.omega;
     }
 
     constexpr void MotionCalOmnidBackward(const float motor_v_target[4], MoveState* cla_motion){
@@ -49,7 +49,7 @@ namespace ChassisControl{
         float m3 = motor_v_target[3];
 
         cla_motion->vx = -0.25f * (m0 + m1 - m2 - m3);
-        cla_motion->vy = -0.25f * (m1 + m2 - m0 - m3);
+        cla_motion->vy = 0.25f * (m1 + m2 - m0 - m3);
         cla_motion->omega = 0.25f * (m0 + m1 + m2 + m3);
     }
 
@@ -101,7 +101,7 @@ namespace ChassisControl{
             DJiMotorGroup::MotorState bf = m3508Group_Chassis.getMotorState(i);
             motor_speed[i] = bf.speed;
         }
-        MotionCalMecanumBackward(motor_speed, &measure_state);
+        MotionCalOmnidBackward(motor_speed, &measure_state);
 
 
         MoveState dv{{target_state.vx - measure_state.vx,
@@ -123,7 +123,7 @@ namespace ChassisControl{
                                  measure_state.omega + dv.omega}};
 
         float motor_v_target[4] = {};
-        MotionCalMecanumForward(target_state_accel_limit, motor_v_target);
+        MotionCalOmnidForward(target_state_accel_limit, motor_v_target);
 
         short tmp_cur[] = {0, 0, 0, 0};
         for (int i = 0; i < 4; ++i) {
