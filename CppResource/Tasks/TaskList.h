@@ -17,6 +17,7 @@ extern "C" {
 [[noreturn]] void ShootTask(void const * argument);
 [[noreturn]] void NanoTask(void const * argument);
 [[noreturn]] void ClientUI_Task(void const * argument);
+[[noreturn]] void HeightControlTask(void const * argument);
 
 #ifdef __cplusplus
 }
