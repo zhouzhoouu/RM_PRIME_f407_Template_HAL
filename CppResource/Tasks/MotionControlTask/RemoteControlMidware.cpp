@@ -100,6 +100,12 @@ namespace RemoteContrlMidware{
 
         bool gimbal_on = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_gimbal_output;
         bool chassis_on = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_chassis_output;
+
+        if(hreferee.RefereeExist()==false){
+            gimbal_on = true;
+            chassis_on = true;
+        }
+
         GimbalControl::NotifyPowerSate(gimbal_on);
         ChassisControl::NotifyPowerSate(chassis_on);
 
