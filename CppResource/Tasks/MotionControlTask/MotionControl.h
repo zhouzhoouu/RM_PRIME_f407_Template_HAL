@@ -39,12 +39,12 @@ namespace MotionParameter{
     static float constexpr GIMBAL_PITCH_KP = 7.f;
     static float constexpr GIMBAL_PITCH_KI = 30.f;
     static float constexpr GIMBAL_PITCH_KD = 0.6f;
-    static float constexpr GIMBAL_PITCH_CMX = -.73f;
-    static float constexpr GIMBAL_PITCH_CMY = -0.f;
+    static float constexpr GIMBAL_PITCH_CMX = 0.f;
+    static float constexpr GIMBAL_PITCH_CMY = 0.f;
 
     static float constexpr GIMBAL_K_CH_PITH = 1/500.f;
-    static float constexpr GIMBAL_K_OMEGA_FORWARD = 2.37f/1980.f;
-    static float constexpr GIMBAL_K_LEAD_OMEGA = 2.3f/1000.f;
+    static float constexpr GIMBAL_K_OMEGA_FORWARD = 4.7f/2000.f;
+    static float constexpr GIMBAL_K_LEAD_OMEGA = 1.9f/1000.f;
 
     static float constexpr GIMBAL_MOVE_SPEED = 9; //云台运动参考速度
     static float constexpr GIMBAL_RAD_VEL = .2f; //匀速运动区间
