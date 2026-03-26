@@ -55,8 +55,10 @@ using namespace MotionFSM;
         pack[2] = hreferee.getRefereeInfo<RefereeType::PowerHeatData>().chassis_power_buffer;
         pack[3] = ChassisControl::GetPower();
         pack[4] = ChassisControl::GetMaxOutPower();
-        pack[5] = hVT03.getState()->wheel;
-        pack[6] = (float)ChassisControl::GetCapRest();
+        pack[5] = (float)ChassisControl::GetCapRest();
+        pack[6] = hreferee.getRefereeInfo<RefereeType::PowerHeatData>().shooter_id1_17mm_cooling_heat;
+        pack[7] = hreferee.getRefereeInfo<RefereeType::PowerHeatData>().shooter_id2_17mm_cooling_heat;
+
 
         Debug::print_vofa(pack, 8);
 

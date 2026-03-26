@@ -44,6 +44,8 @@ namespace MotionFSM{
             true
     };
 
+    volatile inline bool AutoAimOn = false;
+
     //状态定义
     struct Init{};
     struct Idle{};
@@ -60,10 +62,6 @@ namespace MotionFSM{
     struct IntoAutoAim{};
     struct IntoAutoRotate{};
 
-    struct PausePress{};
-    struct LeftPress{};
-    struct RightPress{};
-
     struct PowerOff{};
 
     struct motionTransition{
@@ -77,9 +75,7 @@ namespace MotionFSM{
                     state<_> + event<IntoGimbalLead> / []{ CurrentHandler = GimbalLeadLoop;InitFlag.GimbalLeadNI = true;} = state<GimbalLead>,
                     state<_> + event<IntoAutoAim> / []{ CurrentHandler = AutoAimLoop;InitFlag.AutoAimNI = true;} = state<AutoAim>,
                     state<_> + event<IntoAutoRotate> / []{ CurrentHandler = AutoRotateLoop;InitFlag.AutoRotateNI = true;} = state<AutoRotate>,
-                    state<_> + event<IntoIdle> / []{ CurrentHandler = IdleLoop;InitFlag.IdleNI = true;} = state<Idle>,
-
-                    state<_> + event<PausePress> / []{ CurrentHandler = IdleLoop;InitFlag.IdleNI = true;} = state<Idle>
+                    state<_> + event<IntoIdle> / []{ CurrentHandler = IdleLoop;InitFlag.IdleNI = true;} = state<Idle>
             );
         }
     };
