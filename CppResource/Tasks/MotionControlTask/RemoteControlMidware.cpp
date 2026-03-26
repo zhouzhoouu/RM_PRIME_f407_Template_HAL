@@ -5,24 +5,24 @@
 
 namespace RemoteContrlMidware{
 
+    VT03& hVT03 = VT03::getInstance();
+    DBus& hDBus = DBus::getInstance();
 
     static fsm::sm<MotionFSM::motionTransition> motion_fsm;
     Referee &hreferee = Referee::getInstance();
 
     void setMODE_SW(uint8_t mode){
         if(mode == 0)
-            motion_fsm.process_event(MotionFSM::IntoChassisLead{});
+            motion_fsm.process_event(MotionFSM::IntoIdle{});
         else if(mode == 1)
-            motion_fsm.process_event(MotionFSM::IntoGimbalLead{});
+            motion_fsm.process_event(MotionFSM::IntoChassisLead{});
         else if(mode == 2)
-            motion_fsm.process_event(MotionFSM::IntoAutoAim{});
+            motion_fsm.process_event(MotionFSM::IntoGimbalLead{});
     }
 
     VirtualRC_CMD DBus_input(){
 
         using namespace MotionFSM;
-
-        DBus& hDBus = DBus::getInstance();
 
         auto sta = hDBus.getState();
 
@@ -47,29 +47,35 @@ namespace RemoteContrlMidware{
 
         using namespace MotionFSM;
 
-        VT03& hVT03 = VT03::getInstance();
-
+        static bool odmode;
         static VT03::RCState last_sta;
-
         const VT03::RCState *sta = hVT03.getState();
 
         if(sta->pause && !last_sta.pause){
-
-            if(motion_fsm.is(fsm::state<Idle>))
-                setMODE_SW(sta->mode_sw);
-            else
-                motion_fsm.process_event(PausePress{});
+            if(!motion_fsm.is(fsm::state<Idle>))
+            {
+                if(motion_fsm.is(fsm::state<AutoRotate>))
+                    setMODE_SW(sta->mode_sw);
+                else
+                    motion_fsm.process_event(IntoAutoRotate{});
+            }
         }
 
         if(sta->mode_sw != last_sta.mode_sw)
             setMODE_SW(sta->mode_sw);
 
-        if(sta->fn_1 && !last_sta.fn_1)
+        if(sta->fn_2 && !last_sta.fn_2)
         {
-            if(motion_fsm.is(fsm::state<AutoRotate>))
-                setMODE_SW(sta->mode_sw);
-            else
-                motion_fsm.process_event(IntoAutoRotate{});
+            odmode = !odmode;
+        }
+
+        if(motion_fsm.is(fsm::state<GimbalLead>)||motion_fsm.is(fsm::state<AutoRotate>)){
+            if((sta->fn_1 && !last_sta.fn_1)||(false))
+            {
+                AutoAimOn = !AutoAimOn;
+            }
+        } else{
+            AutoAimOn = false;
         }
 
         short k_move = 300;
@@ -87,7 +93,7 @@ namespace RemoteContrlMidware{
                 v_pitch,
                 v_x,
                 v_y},
-                static_cast<bool>(sta->trigger | BITMASK(sta->key_code, 4))
+                static_cast<bool>(odmode | BITMASK(sta->key_code, 4))
         };
     }
 

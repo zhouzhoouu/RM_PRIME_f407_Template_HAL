@@ -70,6 +70,10 @@ namespace ChassisControl{
         return supCap.getRest();
     }
 
+    float GetMaxOutPower(){
+        return supCap.getMaxOutPower();
+    }
+
     void set_supcap(bool enable){
         supCap.SetState(enable);
     }
@@ -78,23 +82,43 @@ namespace ChassisControl{
     // omega=900时，实际转动速度约1rad/s(云台跟随)
     MoveState setMove(MoveState target_state){
 
-        using namespace RefereeType;
-        auto&  hreferee = Referee::getInstance();
-        if(hreferee.RefereeExist()){
-            float power_buffer = hreferee.getRefereeInfo<PowerHeatData>().chassis_power_buffer;
-            float power_limit = hreferee.getRefereeInfo<GameRobotState>().chassis_power_limit;
-            bool power_on = hreferee.getRefereeInfo<GameRobotState>().power_management_chassis_output;
-            supCap.SetParameter(power_buffer, power_limit, power_on);
-        } else{
-            supCap.SetParameter(60.f, 40.f);
-        }
-
         if(!isPowerOn){
             short tc[] = {0,0,0,0};
             m3508Group_Chassis.setMotorCurrent(tc);
             return {{0,0,0}};
         }
 
+        //功率管理
+        using namespace RefereeType;
+        auto&  hreferee = Referee::getInstance();
+        float power_buffer = 60.f;
+        float power_limit = 80.f;
+        bool power_on = true;
+        if(hreferee.RefereeExist()) {
+            power_buffer = hreferee.getRefereeInfo<PowerHeatData>().chassis_power_buffer;
+            power_limit = hreferee.getRefereeInfo<GameRobotState>().chassis_power_limit;
+            power_on = hreferee.getRefereeInfo<GameRobotState>().power_management_chassis_output;
+        }
+        supCap.SetParameter(power_buffer, power_limit, power_on);
+
+        //功率限制
+        float Power_margin = power_limit;
+        if(supCap.EnableDischarge() && (supCap.getErrcode() == 0))
+            Power_margin += supCap.getMaxOutPower() * 0.7f;
+        float power = supCap.getPower();
+        float ref_rate = power / Power_margin;
+        float k_limt = 1.0f;
+        if(ref_rate > .9f){
+            if(ref_rate > 1.0f)
+                k_limt = 0.f;
+            else
+                k_limt = 10.f - 10.f * ref_rate;
+        }
+        target_state.vx *= k_limt;
+        target_state.vy *= k_limt;
+        target_state.omega *= k_limt;
+
+        //速度测量
         MoveState measure_state{};
         float motor_speed[4] = {0,0,0,0};
         for (int i = 0; i < 4; ++i) {
@@ -104,6 +128,8 @@ namespace ChassisControl{
         MotionCalOmnidBackward(motor_speed, &measure_state);
 
 
+
+        //加速度限制
         MoveState dv{{target_state.vx - measure_state.vx,
                    target_state.vy - measure_state.vy,
                    target_state.omega - measure_state.omega}};
@@ -125,6 +151,7 @@ namespace ChassisControl{
         float motor_v_target[4] = {};
         MotionCalOmnidForward(target_state_accel_limit, motor_v_target);
 
+        //PID控制
         short tmp_cur[] = {0, 0, 0, 0};
         for (int i = 0; i < 4; ++i) {
             Speed_PID[i].Run(motor_v_target[i], motor_speed[i]);
