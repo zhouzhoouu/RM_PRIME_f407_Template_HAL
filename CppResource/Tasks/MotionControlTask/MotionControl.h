@@ -34,7 +34,7 @@ namespace MotionParameter{
     static float constexpr GIMBAL_YAW_KD = 0.72f;
     static float constexpr GIMBAL_YAW_KP = 0.f;
 
-    static float constexpr GIMBAL_PITCH_UPPER = 0.3f;
+    static float constexpr GIMBAL_PITCH_UPPER = 0.15f;
     static float constexpr GIMBAL_PITCH_LOWER = -0.5f;
     static float constexpr GIMBAL_PITCH_KP = 7.f;
     static float constexpr GIMBAL_PITCH_KI = 30.f;
@@ -47,13 +47,13 @@ namespace MotionParameter{
     static float constexpr GIMBAL_K_OMEGA_FORWARD = 2.58f/900.f;
     static float constexpr GIMBAL_K_LEAD_OMEGA = 2.3f/1000.f;
 
-    static float constexpr GIMBAL_MOVE_SPEED = RC_MAX_INPUT * CHASSIS_K_OMEGA * GIMBAL_K_LEAD_OMEGA + 1; //云台运动参考速度
+    static float constexpr GIMBAL_MOVE_SPEED = RC_MAX_INPUT * CHASSIS_K_OMEGA * GIMBAL_K_LEAD_OMEGA + 2; //云台运动参考速度
     static float constexpr GIMBAL_RAD_VEL = .1f; //匀速运动区间
     static float constexpr GIMBAL_RAD_POS = 0.00f; //位置控区间
     static float constexpr GIMBAL_MAX_ALPHA = 12000.f;
 
     static float constexpr AUTOROTATE_MAX_OMEGA = 5000.f;
-    static float constexpr AUTOROTATE_ANGLE_BIAS = -1.05f; //rad
+    static float constexpr AUTOROTATE_ANGLE_BIAS = -1.4f;//-1.05f; //rad
 
 }
 

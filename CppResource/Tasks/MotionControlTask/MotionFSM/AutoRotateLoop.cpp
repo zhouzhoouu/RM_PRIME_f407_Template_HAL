@@ -26,11 +26,13 @@ StateLoopArg MotionFSM::AutoRotateLoop(const volatile RCcmd_t* RCsta, INS_Device
              -(float)RCsta->ch[2] * CHASSIS_K_CHY,
              -(float)RCsta->ch[0] * CHASSIS_K_OMEGA}
     };
-
+    float sq_v = (AbsMove.vx*AbsMove.vx + AbsMove.vy*AbsMove.vy)*0.000001f;
+    if(sq_v < 1.f) sq_v = 1.f;
+    if(sq_v > 2.5f) sq_v = 2.5f;
     ChassisControl::MoveState target_state = {
             {AbsMove.vx * cos_yaw - AbsMove.vy * sin_yaw,
              AbsMove.vx * sin_yaw + AbsMove.vy * cos_yaw,
-             AUTOROTATE_MAX_OMEGA}
+             AUTOROTATE_MAX_OMEGA/sq_v}
     };
 
     float real_omega = AbsMove.omega * GIMBAL_K_LEAD_OMEGA;
