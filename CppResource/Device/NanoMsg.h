@@ -33,6 +33,7 @@ namespace Device{
         void init();
 
         INS_Device::Vector3 getControlCmd();
+        Control_Flag_t getFlag();
 
         /// 将数据存入串口解析FIFO
         /// @param data ///数据指针

@@ -1,8 +1,6 @@
 #include "MotionControl.h"
 #include "MotionFSM.h"
 
-#define BITMASK(a,n) (( (a)&(1<<n) )>>n)
-
 namespace RemoteContrlMidware{
 
     VT03& hVT03 = VT03::getInstance();
@@ -51,7 +49,9 @@ namespace RemoteContrlMidware{
         static VT03::RCState last_sta;
         const VT03::RCState *sta = hVT03.getState();
 
-        if(sta->pause && !last_sta.pause){
+        bool autorotate_b = (sta->pause && !last_sta.pause) ||
+                          (BITMASK(sta->key_code, 6) && !BITMASK(last_sta.key_code, 6));
+        if(autorotate_b){
             if(!motion_fsm.is(fsm::state<Idle>))
             {
                 if(motion_fsm.is(fsm::state<AutoRotate>))
@@ -61,7 +61,10 @@ namespace RemoteContrlMidware{
             }
         }
 
-        if(sta->mode_sw != last_sta.mode_sw)
+        bool mode_sw_cond = (sta->mode_sw != last_sta.mode_sw)||
+                (motion_fsm.is(fsm::state<Idle>) && sta->mode_sw != 0);
+        if(mode_sw_cond)\
+
             setMODE_SW(sta->mode_sw);
 
         if(sta->fn_2 && !last_sta.fn_2)
@@ -70,7 +73,10 @@ namespace RemoteContrlMidware{
         }
 
         if(motion_fsm.is(fsm::state<GimbalLead>)||motion_fsm.is(fsm::state<AutoRotate>)){
-            if((sta->fn_1 && !last_sta.fn_1)||(false))
+            bool auto_aim_b = (sta->fn_1 && !last_sta.fn_1)||
+                    (sta->mouse_r && !last_sta.mouse_r)||
+                    ((BITMASK(sta->key_code, 7) && !BITMASK(last_sta.key_code, 7)));
+            if(auto_aim_b)
             {
                 AutoAimOn = !AutoAimOn;
             }

@@ -38,7 +38,7 @@ StateLoopArg MotionFSM::AutoAimLoop(const volatile RCcmd_t* RCsta, INS_Device& h
     };
 
     auto angcmd = haimnano.getControlCmd();
-    float real_omega = AbsMove.omega * GIMBAL_K_LEAD_OMEGA;
+//    float real_omega = AbsMove.omega * GIMBAL_K_LEAD_OMEGA;
 
     auto PitchData = cur_sta.PithSta;
     float ref_ang =  PitchData.pos + angcmd.pitch - hINS.getAngle().pitch;
