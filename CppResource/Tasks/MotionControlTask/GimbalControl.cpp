@@ -98,8 +98,6 @@ namespace GimbalControl{
 
     void setPithRelative(AxisState target_s){
 
-        float yaw_rad = angleMod(getYawState().pos);
-
         if(target_s.pos > GIMBAL_PITCH_UPPER) target_s.pos = GIMBAL_PITCH_UPPER;
         if(target_s.pos < GIMBAL_PITCH_LOWER) target_s.pos = GIMBAL_PITCH_LOWER;
 
