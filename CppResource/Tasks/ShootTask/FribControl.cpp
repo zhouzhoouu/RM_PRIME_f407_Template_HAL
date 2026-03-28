@@ -2,6 +2,7 @@
 
 namespace FribControl{
 
+    static bool isPowerOn = false;
     DJiMotorGroup m3508Group_frib(&hcan2, 0x201, 0x200);
     DeltaPID Frib_PID[] = {
             DeltaPID(2.0f, 0.05f, 0.0f, 0.0f, MAX_Fib_CUR, -MAX_Fib_CUR),
@@ -9,7 +10,17 @@ namespace FribControl{
     };
 
 
+    void NotifyPowerSate(bool s){
+        if(isPowerOn && !s){
+            for(auto & i : Frib_PID){
+                i.Reset();
+            }
+        }
+        isPowerOn = s;
+    }
+
     void setFribSpeed(float target_speed){
+        if(!isPowerOn) return;
 
         float target_speed_arr[] = {target_speed, -target_speed};
 

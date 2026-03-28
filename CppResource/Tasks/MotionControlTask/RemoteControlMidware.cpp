@@ -1,8 +1,6 @@
 #include "MotionControl.h"
 #include "MotionFSM.h"
 
-#define BITMASK(a,n) (( (a)&(1<<n) )>>n)
-
 namespace RemoteContrlMidware{
 
     VT03& hVT03 = VT03::getInstance();
@@ -70,7 +68,7 @@ namespace RemoteContrlMidware{
         }
 
         if(motion_fsm.is(fsm::state<GimbalLead>)||motion_fsm.is(fsm::state<AutoRotate>)){
-            if((sta->fn_1 && !last_sta.fn_1)||(false))
+            if((sta->fn_1 && !last_sta.fn_1)||(sta->mouse_y))
             {
                 AutoAimOn = !AutoAimOn;
             }

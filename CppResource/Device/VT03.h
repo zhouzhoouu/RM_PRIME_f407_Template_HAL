@@ -6,6 +6,8 @@
 
 namespace Device {
 
+    #define BITMASK(a,n) (( (a)&(1<<n) )>>n)
+
     class VT03 {
     public:
         static constexpr uint32_t VT03_FRAME_LENGTH = 21;

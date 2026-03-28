@@ -40,28 +40,28 @@ using namespace MotionFSM;
 }
 
 
-
-[[noreturn]] void DebugTask(void const * argument){
-
-    Referee &hreferee = Referee::getInstance();
-    VT03 &hVT03 = VT03::getInstance();
-
-    while (true){
-
-        float pack[8];
-
-        pack[0] = hreferee.getRefereeInfo<RefereeType::GameRobotState>().chassis_power_limit;
-        pack[1] = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_chassis_output;
-        pack[2] = hreferee.getRefereeInfo<RefereeType::PowerHeatData>().chassis_power_buffer;
-        pack[3] = ChassisControl::GetPower();
-        pack[4] = ChassisControl::GetMaxOutPower();
-        pack[5] = (float)ChassisControl::GetCapRest();
-        pack[6] = hreferee.getRefereeInfo<RefereeType::PowerHeatData>().shooter_id1_17mm_cooling_heat;
-        pack[7] = hreferee.getRefereeInfo<RefereeType::PowerHeatData>().shooter_id2_17mm_cooling_heat;
-
-
-        Debug::print_vofa(pack, 8);
-
-        osDelay(50);
-    }
-}
+//
+//[[noreturn]] void DebugTask(void const * argument){
+//
+//    Referee &hreferee = Referee::getInstance();
+//    VT03 &hVT03 = VT03::getInstance();
+//
+//    while (true){
+//
+//        float pack[8];
+//
+//        pack[0] = hreferee.getRefereeInfo<RefereeType::GameRobotState>().chassis_power_limit;
+//        pack[1] = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_chassis_output;
+//        pack[2] = hreferee.getRefereeInfo<RefereeType::PowerHeatData>().chassis_power_buffer;
+//        pack[3] = ChassisControl::GetPower();
+//        pack[4] = ChassisControl::GetMaxOutPower();
+//        pack[5] = (float)ChassisControl::GetCapRest();
+//        pack[6] = hreferee.getRefereeInfo<RefereeType::PowerHeatData>().shooter_id1_17mm_cooling_heat;
+//        pack[7] = hreferee.getRefereeInfo<RefereeType::PowerHeatData>().shooter_id2_17mm_cooling_heat;
+//
+//
+//        Debug::print_vofa(pack, 8);
+//
+//        osDelay(50);
+//    }
+//}
