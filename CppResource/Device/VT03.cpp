@@ -35,8 +35,9 @@ void VT03::receiveMessage(uint8_t *pdata) {
     state[next_index].mouse_x = tmp_data->mouse_x;
     state[next_index].mouse_y = tmp_data->mouse_y;
     state[next_index].mouse_z = tmp_data->mouse_z;
-    state[next_index].press_l = tmp_data->mouse_left;
-    state[next_index].press_r = tmp_data->mouse_right;
+    state[next_index].mouse_l = tmp_data->mouse_left;
+    state[next_index].mouse_r = tmp_data->mouse_right;
+    state[next_index].mouse_middle = tmp_data->mouse_middle;
     state[next_index].key_code = tmp_data->key;
 
     active_index = next_index;

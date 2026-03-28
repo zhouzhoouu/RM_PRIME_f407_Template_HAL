@@ -26,8 +26,9 @@ namespace Device {
             int16_t mouse_x;    // -32768~32768
             int16_t mouse_y;    // -32768~32768
             int16_t mouse_z;    // -32768~32768
-            uint8_t press_l;    // 0 or 1
-            uint8_t press_r;    // 0 or 1
+            bool mouse_l;    // 0 or 1
+            bool mouse_r;    // 0 or 1
+            bool mouse_middle;
             uint16_t key_code;  // bit field
 
             RCState& operator=(const RCState* other)
@@ -49,8 +50,9 @@ namespace Device {
                 mouse_x = other->mouse_x;
                 mouse_y = other->mouse_y;
                 mouse_z = other->mouse_z;
-                press_l = other->press_l;
-                press_r = other->press_r;
+                mouse_l = other->mouse_l;
+                mouse_r = other->mouse_r;
+                mouse_middle = other->mouse_middle;
                 key_code = other->key_code;
 
                 return *this;
