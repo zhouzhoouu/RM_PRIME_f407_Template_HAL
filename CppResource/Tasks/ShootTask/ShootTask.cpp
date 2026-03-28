@@ -47,8 +47,8 @@ static uint32_t shootcount = 0;
 #else
 
         auto vt_sta = hVT03.getState();
-        auto x = vt_sta->trigger | vt_sta->mouse_x;
-        bool b = (vt_sta->fn_2 && vt_sta->trigger)||vt_sta->mouse_z;
+        auto x = vt_sta->trigger | vt_sta->mouse_l;
+        bool b = (vt_sta->fn_2 && vt_sta->trigger)||vt_sta->mouse_middle;
         ShootFSM::ShootFSM_Button_Loop(b);
 
         bool isFribOpened = ShootFSM::getIsFribOpened();

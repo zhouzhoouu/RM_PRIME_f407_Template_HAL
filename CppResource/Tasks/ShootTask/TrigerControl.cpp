@@ -102,14 +102,14 @@ namespace TriggerControl{
 }
 
 
-[[noreturn]] void DebugTask(void const * argument){
-
-    while (true){
-
-        float pack[8];
-        pack[0] = TriggerControl::TriggerCounter;
-        Debug::print_vofa(pack, 8);
-
-        osDelay(50);
-    }
-}
+//[[noreturn]] void DebugTask(void const * argument){
+//
+//    while (true){
+//
+//        float pack[8];
+//        pack[0] = TriggerControl::TriggerCounter;
+//        Debug::print_vofa(pack, 8);
+//
+//        osDelay(50);
+//    }
+//}
