@@ -31,7 +31,6 @@ namespace TriggerControl{
         }
         target_speed *= k_limt;
 
-
         if(isbacking)
             target_speed = -Tri_BACKING_SPEED;
 
