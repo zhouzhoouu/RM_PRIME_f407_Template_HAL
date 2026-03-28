@@ -103,13 +103,6 @@ namespace GimbalControl{
         if(target_s.pos > GIMBAL_PITCH_UPPER) target_s.pos = GIMBAL_PITCH_UPPER;
         if(target_s.pos < GIMBAL_PITCH_LOWER) target_s.pos = GIMBAL_PITCH_LOWER;
 
-        if( InInterval(yaw_rad, 0.65f, PI/6.f + 0.1f) || InInterval(yaw_rad, 0.65f - PI, PI/6.f + 0.1f) ){
-            if(target_s.pos > 0.2f){
-                target_s.pos = 0.2f;
-                target_s.omega = 0.f;
-            }
-        }
-
         float pitch_rad = getPithState().pos;
         float error_pos = target_s.pos - pitch_rad;
         float epo = error_pos*GIMBAL_PITCH_KI;
