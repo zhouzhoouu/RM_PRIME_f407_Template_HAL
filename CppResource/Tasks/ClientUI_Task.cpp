@@ -1,5 +1,6 @@
 #include "TaskList.h"
 #include "Referee.h"
+#include "VT03.h"
 #include "ui.h"
 
 using namespace Device;
@@ -8,27 +9,21 @@ using namespace Device;
 void ClientUI_Task(void const * argument){
 
     Referee &hreferee = Referee::getInstance();
-    bool last_referee_exist = hreferee.RefereeExist();
+    auto &hVT03 = VT03::getInstance();
+
+    static bool last_G = false;
 
     while (1){
 
-        bool ref_exist = hreferee.RefereeExist();
-        if(last_referee_exist != ref_exist) {
-            last_referee_exist = ref_exist;
-            if(ref_exist){
-                osDelay(100);
-                ui_remove_g_Ungroup();
-                osDelay(100);
-                ui_init_g_Ungroup();
-            }
+        bool G = BITMASK(hVT03.getState()->key_code, 10);
+        if(G && !last_G)
+        {
+            ui_init_g_Ungroup();
         }
+        last_G = G;
 
-//        ui_remove_g_Ungroup();
-        ui_init_g_Ungroup();
-//        if(ui_g_Ungroup_engbar->end_x > ui_g_Ungroup_engbar->start_x)
-//            ui_g_Ungroup_engbar->end_x--;
-//        ui_g_Ungroup_engbar->start_x = 500;
-//        ui_update_g_Ungroup();
+
+        ui_update_g_Ungroup();
 
         osDelay(50);
     }

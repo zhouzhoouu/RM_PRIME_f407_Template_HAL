@@ -8,10 +8,9 @@
 
 #include "ui_interface.h"
 
-extern ui_interface_line_t *ui_g_Ungroup_engbar_bg;
-extern ui_interface_line_t *ui_g_Ungroup_engbar;
-extern ui_interface_number_t *ui_g_Ungroup_NewNumber;
-extern ui_interface_round_t *ui_g_Ungroup_NewRound;
+extern ui_interface_number_t *ui_g_Ungroup_EGY_NUM;
+extern ui_interface_ellipse_t *ui_g_Ungroup_LAUNCH3508;
+extern ui_interface_ellipse_t *ui_g_Ungroup_AIM;
 
 void ui_init_g_Ungroup();
 void ui_update_g_Ungroup();
