@@ -39,7 +39,7 @@ StateLoopArg MotionFSM::AutoRotateLoop(const volatile RCcmd_t* RCsta, INS_Device
     float pitch_omega = (float) RCsta->ch[1] * GIMBAL_K_CH_PITH;
     float Abs_pitch_recode = cur_sta.taget_pitch - Dpitch;
 
-    if(AutoAimOn){
+    if(AutoAimOn&&(haimnano.getFlag().all_flags!=0)){
         auto angcmd = haimnano.getControlCmd();
         Abs_deg_recode = angcmd.yaw;
         Abs_pitch_recode = angcmd.pitch;
