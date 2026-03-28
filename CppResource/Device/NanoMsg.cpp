@@ -57,6 +57,10 @@ INS_Device::Vector3 NanoMsg::getControlCmd(){
     return rel;
 }
 
+NanoMsg::Control_Flag_t NanoMsg::getFlag(){
+    return controlFlag;
+}
+
 void NanoMsg::ProcessData(){
 
     while (DataFifo.front() != 0x42 && DataFifo.current_size > 17)
