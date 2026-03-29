@@ -54,7 +54,6 @@ StateLoopArg MotionFSM::GimbalLeadLoop(const volatile RCcmd_t* RCsta, INS_Device
 
     } else{
 
-        .
         Abs_deg_recode = GimbalControl::angleMod(Abs_deg_recode +  real_omega* T_SAMPLE);
         Abs_pitch_recode = GimbalControl::angleMod(Abs_pitch_recode + pitch_omega*T_SAMPLE);
     }

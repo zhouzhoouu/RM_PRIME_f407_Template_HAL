@@ -2,9 +2,9 @@
 using namespace MotionFSM;
 
 static Referee &hreferee = Referee::getInstance();
-
+static uint32_t initcount = 0;
 StateLoopArg MotionFSM::InitLoop(const volatile RCcmd_t*, INS_Device&, const StateLoopArg& cur_sta){
-    InitFlag.InitNI = false;
+    InitFlag.InitNI = true;
 
     bool gimbal_on = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_gimbal_output;
     bool chassis_on = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_chassis_output;
@@ -18,9 +18,15 @@ StateLoopArg MotionFSM::InitLoop(const volatile RCcmd_t*, INS_Device&, const Sta
 
     if(!(chassis_on && gimbal_on))
     {
-
+        initcount = 0;
     }else{
-        InitFlag.InitNI = false;
+        if(initcount < 500){
+            initcount++;
+        } else
+        {
+            InitFlag.InitNI = false;
+        }
+
     }
 
 
