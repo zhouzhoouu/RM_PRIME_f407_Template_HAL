@@ -96,7 +96,7 @@ namespace TriggerControl{
     }
 
     void AddStep(){
-        TriggerCounter -= 90000;
+        TriggerCounter -= 85200;
     }
 
 }
