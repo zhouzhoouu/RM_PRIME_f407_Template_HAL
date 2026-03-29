@@ -25,7 +25,7 @@ namespace TriggerControl{
     void setSpeed(float target_speed);
     void Loop();
     void AddStep();
-
+    void RestStep();
 }
 
 namespace FribControl{

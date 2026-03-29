@@ -65,9 +65,12 @@ static uint32_t shootcount = 0;
                     TriggerControl::AddStep();
                 }
             } else{
+                TriggerControl::RestStep();
                 shootcount = SHOOT_GAP_MS;
             }
             frib_speed = 6000.f;
+        } else {
+            TriggerControl::RestStep();
         }
 
         FribControl::setFribSpeed(frib_speed);

@@ -37,20 +37,6 @@ namespace TriggerControl{
     void setSpeed(float target_speed){
 
         if(!isPowerOn)return;
-        //热量限制
-        using namespace RefereeType;
-        uint16_t shooterHeat = hreferee.getRefereeInfo<RefereeType::PowerHeatData>().shooter_id1_17mm_cooling_heat;
-        uint16_t shooterHeatMax = hreferee.getRefereeInfo<GameRobotState>().shooter_barrel_heat_limit;
-
-        float ref_rate = (float)shooterHeat / (float)shooterHeatMax;
-        float k_limt = 1.0f;
-        if(ref_rate > .9f){
-            if(ref_rate > 1.0f)
-                k_limt = 0.f;
-            else
-                k_limt = 10.f - 10.f * ref_rate;
-        }
-        target_speed *= k_limt;
 
         //
         short tmp_cur[] = {0, 0, 0, 0};
@@ -87,8 +73,17 @@ namespace TriggerControl{
     }
 
     void Loop(){
-        float tspd = -0.1f*(float)TriggerCounter;
+        //热量限制
+        using namespace RefereeType;
+        uint16_t shooterHeat = hreferee.getRefereeInfo<RefereeType::PowerHeatData>().shooter_id1_17mm_cooling_heat;
+        uint16_t shooterHeatMax = hreferee.getRefereeInfo<GameRobotState>().shooter_barrel_heat_limit;
 
+        float ref_rate = (float)shooterHeat / (float)shooterHeatMax;
+        if(ref_rate>0.8f){
+            TriggerCounter = 0;
+        }
+
+        float tspd = -0.1f*(float)TriggerCounter;
         if (tspd > MAX_TRIG_SPEED) tspd = MAX_TRIG_SPEED;
         else if (tspd < -MAX_TRIG_SPEED) tspd = -MAX_TRIG_SPEED;
 
@@ -97,6 +92,11 @@ namespace TriggerControl{
 
     void AddStep(){
         TriggerCounter -= 90000;
+    }
+
+    void RestStep(){
+        TriggerCounter = 0;
+
     }
 
 }

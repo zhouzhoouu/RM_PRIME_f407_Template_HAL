@@ -9,7 +9,6 @@ namespace FribControl{
             DeltaPID(3.0f, 0.07f, 0.0f, 0.0f, MAX_Fib_CUR, -MAX_Fib_CUR),
     };
 
-
     void NotifyPowerSate(bool s){
         if(isPowerOn && !s){
             for(auto & i : Frib_PID){
