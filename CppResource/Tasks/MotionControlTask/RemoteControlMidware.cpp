@@ -130,7 +130,7 @@ namespace RemoteContrlMidware{
             else {
                 if(!(chassis_on && gimbal_on))
                     motion_fsm.process_event(PowerOff{});
-                return VT03_input() + DBus_input();
+//                return VT03_input();// + DBus_input();
             }
         }
 
