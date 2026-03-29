@@ -5,8 +5,8 @@ namespace FribControl{
     static bool isPowerOn = false;
     DJiMotorGroup m3508Group_frib(&hcan2, 0x201, 0x200);
     DeltaPID Frib_PID[] = {
-            DeltaPID(2.0f, 0.05f, 0.0f, 0.0f, MAX_Fib_CUR, -MAX_Fib_CUR),
-            DeltaPID(2.0f, 0.05f, 0.0f, 0.0f, MAX_Fib_CUR, -MAX_Fib_CUR),
+            DeltaPID(3.0f, 0.07f, 0.0f, 0.0f, MAX_Fib_CUR, -MAX_Fib_CUR),
+            DeltaPID(3.0f, 0.07f, 0.0f, 0.0f, MAX_Fib_CUR, -MAX_Fib_CUR),
     };
 
 
