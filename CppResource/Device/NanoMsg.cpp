@@ -21,7 +21,7 @@ uint32_t NanoMsg::pushData(uint8_t* data, uint32_t len){
     return len;
 }
 
-void NanoMsg::sendMsg(float yaw, float pitch){
+void NanoMsg::sendMsg(float yaw, float pitch, uint8_t c){
 
     uint8_t sendBuff[13];
 
@@ -39,7 +39,7 @@ void NanoMsg::sendMsg(float yaw, float pitch){
             sendBuff[3 + j * sizeof(float) + i] = float_data_ptr[i];
         }
     }
-    sendBuff[11] = 0xFF;
+    sendBuff[11] = c;
 
     uint8_t check = 0x00;
     for(int i = 0; i < 12; i++)
@@ -88,6 +88,7 @@ void NanoMsg::ProcessData(){
             pitch_Union.U8_Buff[1] = temp[8];
             pitch_Union.U8_Buff[2] = temp[9];
             pitch_Union.U8_Buff[3] = temp[10];
+//            pitch_Union.Float *= -1.f;
 
             Depth_Union.U8_Buff[0] = temp[11];
             Depth_Union.U8_Buff[1] = temp[12];
@@ -101,11 +102,12 @@ void NanoMsg::ProcessData(){
 
 }
 
-void NanoMsg::writeMsg(float yaw, float pitch){
+void NanoMsg::writeMsg(float yaw, float pitch, uint8_t c){
     tmp_yaw = yaw;
     tmp_pitch = pitch;
+    tmp_c = c;
 }
 
 void NanoMsg::sendMsg(){
-    sendMsg(tmp_yaw ,tmp_pitch);
+    sendMsg(tmp_yaw ,tmp_pitch, tmp_c);
 }

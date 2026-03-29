@@ -40,8 +40,8 @@ namespace Device{
         /// @param len 数据长度
         /// @return 返回实际存入的数据长度
         uint32_t pushData(uint8_t* data, uint32_t len);
-        void sendMsg(float yaw, float pitch);
-        void writeMsg(float yaw, float pitch);
+        void sendMsg(float yaw, float pitch, uint8_t c);
+        void writeMsg(float yaw, float pitch, uint8_t c);
         void sendMsg();
         void ProcessData();
 
@@ -56,6 +56,7 @@ namespace Device{
         etl::queue<uint8_t, 256> DataFifo;
 
         float tmp_yaw, tmp_pitch;
+        uint8_t tmp_c;
 
         Bint32_Union yaw_Union{};
         Bint32_Union pitch_Union{};

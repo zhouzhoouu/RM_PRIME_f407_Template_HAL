@@ -3,6 +3,7 @@
 #include "INS_Device.h"
 #include "NanoMsg.h"
 #include "usbd_cdc_if.h"
+#include "Referee.h"
 #include "Debug.h"
 
 using namespace Device;
@@ -11,13 +12,16 @@ static uint8_t rx_buf[256];
 
 [[noreturn]] void NanoTask(void const * argument){
 
+    using namespace RefereeType;
     auto &hINS = INS_Device::getInstance();
     auto &hnano = NanoMsg::getInstance();
+    auto &hreferee = Referee::getInstance();
 
     while (1){
 
         auto angle = hINS.getAngle();
-        hnano.sendMsg(angle.yaw, angle.pitch);
+        uint8_t rid = hreferee.getRefereeInfo<GameRobotState>().robot_id;
+        hnano.sendMsg(angle.yaw, angle.pitch,rid>10?1:0);
         //hnano.sendMsg();
 
         uint32_t len = CDC_Available_FS();
