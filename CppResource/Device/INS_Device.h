@@ -57,7 +57,6 @@ namespace Device{
         Vector3 accel_tmp = {0.0f, 0.0f, 0.0f};
         Vector3 mag_tmp = {0.0f, 0.0f, 0.0f};
 
-
         constexpr static const float Filter_num[][4] = {{0.002329458745586203f, 0.f, 0.f, 0.f},{1.f, -1.929454039488895f, 0.93178349823448126f, 0.f}};
         Component::Simple_IIR3 acc_filter[3] = {
                 Component::Simple_IIR3(Filter_num[0],Filter_num[1]),

@@ -26,6 +26,8 @@ void INS_Device::Insert(Vector3 acc, Vector3 gyro, Vector3 meg ,float dt){
     AHRS_update(angle_quat.data, dt, omiga.data, accel_tmp.data, mag_tmp.data);
     get_angle(angle_quat.data, &angle.yaw, &angle.pitch, &angle.roll);
 
+    angle.pitch *= -1.f;
+    angle.roll *= -1.f;
 }
 
 INS_Device::Vector3 INS_Device::getAngle(){
