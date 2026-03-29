@@ -31,7 +31,7 @@ constexpr Chassis_M2006::RodSet HighPos = {{-3250000,-3250000,-3250000,-3250000}
 
     while (true){
 
-        short whel = -Dbus.getState()->ch[4];
+        short whel = -Dbus.getState()->ch[4] + hVT03.getState()->wheel;
 
         if(triggered){
             if(whel > -300){
@@ -46,14 +46,14 @@ constexpr Chassis_M2006::RodSet HighPos = {{-3250000,-3250000,-3250000,-3250000}
             }
         }
 
-        bool fn2_s = hVT03.getState()->fn_2;
-        if(last_fn2 != fn2_s && fn2_s){
-            isHigh = !isHigh;
-            if(isHigh) target_rod_pos = HighPos;
-            else target_rod_pos = {{0,0,0,0}};
-        }
-
-        last_fn2 = fn2_s;
+//        bool fn2_s = hVT03.getState()->fn_2;
+//        if(last_fn2 != fn2_s && fn2_s){
+//            isHigh = !isHigh;
+//            if(isHigh) target_rod_pos = HighPos;
+//            else target_rod_pos = {{0,0,0,0}};
+//        }
+//
+//        last_fn2 = fn2_s;
 
         RodSet rod_spd = {{0,0,0,0}};
         auto rod_pos = getRodLen();
@@ -72,23 +72,23 @@ constexpr Chassis_M2006::RodSet HighPos = {{-3250000,-3250000,-3250000,-3250000}
 }
 
 
-[[noreturn]] void DebugTask(void const * argument){
-
-    using namespace Chassis_M2006;
-
-    while (true){
-
-
-        float pack[6];
-
-        for (int i = 0; i < 4; ++i) {
-            pack[i] = getRodLen().datas[i];
-        }
-        pack[4] = isHigh;
-        pack[5] = triggered;
-
-//        Debug::print_vofa(pack, 6);
-
-        osDelay(50);
-    }
-}
+//[[noreturn]] void DebugTask(void const * argument){
+//
+//    using namespace Chassis_M2006;
+//
+//    while (true){
+//
+//
+//        float pack[6];
+//
+//        for (int i = 0; i < 4; ++i) {
+//            pack[i] = getRodLen().datas[i];
+//        }
+//        pack[4] = isHigh;
+//        pack[5] = triggered;
+//
+////        Debug::print_vofa(pack, 6);
+//
+//        osDelay(50);
+//    }
+//}
