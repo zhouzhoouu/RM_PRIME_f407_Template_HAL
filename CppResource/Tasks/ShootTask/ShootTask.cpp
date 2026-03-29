@@ -67,7 +67,7 @@ static uint32_t shootcount = 0;
             } else{
                 shootcount = SHOOT_GAP_MS;
             }
-            frib_speed = 7000.f;
+            frib_speed = 6000.f;
         }
 
         FribControl::setFribSpeed(frib_speed);
