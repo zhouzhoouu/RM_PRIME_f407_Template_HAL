@@ -51,8 +51,8 @@ namespace MotionParameter{
     static float constexpr GIMBAL_RAD_POS = 0.0f; //位置控区间
     static float constexpr GIMBAL_MAX_ALPHA = 12000.f;
 
-    static float constexpr AUTOROTATE_MAX_OMEGA = 3000.f;
-    static float constexpr AUTOROTATE_ANGLE_BIAS = -0.3f; //rad
+    static float constexpr AUTOROTATE_MAX_OMEGA = 5500.f;
+    static float constexpr AUTOROTATE_ANGLE_BIAS = -1.05f; //rad
 
 }
 
