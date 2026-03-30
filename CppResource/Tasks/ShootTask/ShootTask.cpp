@@ -15,8 +15,12 @@ static uint32_t shootcount = 0;
         bool booster_power = hreferee.getRefereeInfo<RefereeType::GameRobotState>().power_management_shooter_output;
         TriggerControl::NotifyPowerSate(booster_power);
         FribControl::NotifyPowerSate(booster_power);
-        if(!booster_power) ShootFSM::FSM_Reset();
-
+        if(!booster_power)
+        {
+            ShootFSM::FSM_Reset();
+            TriggerControl::RestStep();
+            shootcount = SHOOT_GAP_MS;
+        }
 #ifdef USE_WHEEL_CTRL_
         short tin = -hDbus.getState()->ch[4] + hVT03.getState()->wheel;
 

@@ -15,7 +15,8 @@ constexpr float MAX_Tri_CUR = 3000.0f;
 constexpr float MAX_TRIG_SPEED = 4500.f;
 constexpr float Tri_BACKING_SPEED = 4000.f;
 constexpr float Tri_BACKING_TIME = 200;
-constexpr float TRIG_STUCK_RATE = 0.20f;
+constexpr float TRIG_STUCK_RATE = 0.10f;
+constexpr int SHOOT_STEP = 90000;
 constexpr uint32_t SHOOT_GAP_MS = (uint32_t)((36.f*60000.f)/(3.2727f*MAX_TRIG_SPEED)) + 10;
 constexpr uint32_t TOPEN = 600;
 

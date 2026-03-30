@@ -53,7 +53,7 @@ namespace TriggerControl{
         if(backing)
             target_speed = -Tri_BACKING_SPEED;
         float error = target_speed - dir*motor_speed;
-        if(error > 500){
+        if(error > TRIG_STUCK_RATE * MAX_TRIG_SPEED){
             timeout++;
             if(timeout > Tri_BACKING_TIME){
                 backing = true;
@@ -78,9 +78,8 @@ namespace TriggerControl{
         uint16_t shooterHeat = hreferee.getRefereeInfo<RefereeType::PowerHeatData>().shooter_id1_17mm_cooling_heat;
         uint16_t shooterHeatMax = hreferee.getRefereeInfo<GameRobotState>().shooter_barrel_heat_limit;
 
-        float ref_rate = (float)shooterHeat / (float)shooterHeatMax;
-        if(ref_rate>0.8f){
-            TriggerCounter = 0;
+        if(shooterHeatMax - shooterHeat < 30){
+            RestStep();
         }
 
         float tspd = -0.1f*(float)TriggerCounter;
@@ -91,12 +90,13 @@ namespace TriggerControl{
     }
 
     void AddStep(){
-        TriggerCounter -= 90000;
+        if(TriggerCounter > -2*SHOOT_STEP)
+            TriggerCounter -= SHOOT_STEP;
     }
 
     void RestStep(){
-        TriggerCounter = 0;
-
+        while (TriggerCounter < -SHOOT_STEP) TriggerCounter += SHOOT_STEP;
+//        TriggerCounter = 0;
     }
 
 }
