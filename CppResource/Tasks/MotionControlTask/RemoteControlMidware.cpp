@@ -18,6 +18,12 @@ namespace RemoteContrlMidware{
             motion_fsm.process_event(MotionFSM::IntoGimbalLead{});
     }
 
+
+    bool isAutoRotate(){
+        using namespace MotionFSM;
+        return motion_fsm.is(fsm::state<AutoRotate>);
+    }
+
     VirtualRC_CMD DBus_input(){
 
         using namespace MotionFSM;
@@ -63,8 +69,7 @@ namespace RemoteContrlMidware{
 
         bool mode_sw_cond = (sta->mode_sw != last_sta.mode_sw)||
                 (motion_fsm.is(fsm::state<Idle>) && sta->mode_sw != 0);
-        if(mode_sw_cond)\
-
+        if(mode_sw_cond)
             setMODE_SW(sta->mode_sw);
 
         if(sta->fn_2 && !last_sta.fn_2)

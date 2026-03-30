@@ -64,6 +64,7 @@ namespace ChassisControl{
     uint32_t GetCapRest();
     float GetMaxOutPower();
     void set_supcap(bool enable);
+    bool GetSupEnable();
 
     union MoveState{
         struct {
@@ -101,6 +102,7 @@ namespace RemoteContrlMidware{
         }
     };
 
+    bool isAutoRotate();
     void RemoteContrlMidwareInit();
     VirtualRC_CMD RemoteContrlMidwareLoop();
 

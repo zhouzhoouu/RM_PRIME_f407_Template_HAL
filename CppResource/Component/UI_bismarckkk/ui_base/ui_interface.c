@@ -20,8 +20,9 @@ void print_message(const uint8_t *message, const int length) {
 }
 
 void uart_send(const uint8_t *message, const int length) {
-    osDelay(10);
+    osDelay(50);
     HAL_UART_Transmit_DMA(&huart6, (uint8_t *) message, length);
+    osDelay(50);
 }
 
 const unsigned char CRC8_TAB[256] = {

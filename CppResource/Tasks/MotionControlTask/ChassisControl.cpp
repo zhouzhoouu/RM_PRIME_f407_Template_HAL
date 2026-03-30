@@ -73,9 +73,13 @@ namespace ChassisControl{
     float GetMaxOutPower(){
         return supCap.getMaxOutPower();
     }
-
+    static bool supEn;
+    bool GetSupEnable(){
+        return supEn;
+    }
     void set_supcap(bool enable){
         supCap.SetState(enable);
+        supEn = enable;
     }
 
     //实测omega=1980时，实际转动速度2rad/s左右(英雄机器人)
