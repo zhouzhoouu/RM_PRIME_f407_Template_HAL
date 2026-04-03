@@ -12,6 +12,9 @@ extern ui_interface_number_t *ui_g_Ungroup_EGY_NUM;
 extern ui_interface_ellipse_t *ui_g_Ungroup_LAUNCH3508;
 extern ui_interface_ellipse_t *ui_g_Ungroup_AIM;
 extern ui_interface_ellipse_t *ui_g_Ungroup_AUTOROTATE;
+extern ui_interface_string_t *ui_g_Ungroup_AutoRotateText;
+extern ui_interface_string_t *ui_g_Ungroup_ShootText;
+extern ui_interface_string_t *ui_g_Ungroup_AimText;
 
 void ui_init_g_Ungroup();
 void ui_update_g_Ungroup();

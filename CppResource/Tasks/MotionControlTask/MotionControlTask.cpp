@@ -1,5 +1,6 @@
 #include "MotionControl.h"
 #include "MotionFSM.h"
+#include "ui.h"
 
 using namespace MotionFSM;
 
@@ -57,7 +58,7 @@ using namespace MotionFSM;
         pack[4] = ChassisControl::GetMaxOutPower();
         pack[5] = (float)ChassisControl::GetCapRest();
         pack[6] = hreferee.getRefereeInfo<RefereeType::PowerHeatData>().shooter_id1_17mm_cooling_heat;
-        pack[7] = hreferee.getRefereeInfo<RefereeType::PowerHeatData>().shooter_id2_17mm_cooling_heat;
+        pack[7] = ui_self_id;
 
 
         Debug::print_vofa(pack, 8);

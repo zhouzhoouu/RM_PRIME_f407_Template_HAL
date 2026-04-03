@@ -88,16 +88,139 @@ void _ui_remove_g_Ungroup_0() {
     SEND_MESSAGE((uint8_t *) &ui_g_Ungroup_0, sizeof(ui_g_Ungroup_0));
 }
 
+ui_string_frame_t ui_g_Ungroup_1;
+ui_interface_string_t* ui_g_Ungroup_AutoRotateText = &(ui_g_Ungroup_1.option);
+
+void _ui_init_g_Ungroup_1() {
+    ui_g_Ungroup_1.option.figure_name[0] = 0;
+    ui_g_Ungroup_1.option.figure_name[1] = 0;
+    ui_g_Ungroup_1.option.figure_name[2] = 4;
+    ui_g_Ungroup_1.option.operate_type = 1;
+
+    ui_g_Ungroup_AutoRotateText->figure_type = 7;
+    ui_g_Ungroup_AutoRotateText->operate_type = 1;
+    ui_g_Ungroup_AutoRotateText->layer = 0;
+    ui_g_Ungroup_AutoRotateText->color = 3;
+    ui_g_Ungroup_AutoRotateText->start_x = 1525;
+    ui_g_Ungroup_AutoRotateText->start_y = 665;
+    ui_g_Ungroup_AutoRotateText->width = 2;
+    ui_g_Ungroup_AutoRotateText->font_size = 20;
+    ui_g_Ungroup_AutoRotateText->str_length = 6;
+    strcpy(ui_g_Ungroup_AutoRotateText->string, "Rotate");
+
+
+    ui_proc_string_frame(&ui_g_Ungroup_1);
+    SEND_MESSAGE((uint8_t *) &ui_g_Ungroup_1, sizeof(ui_g_Ungroup_1));
+}
+
+void _ui_update_g_Ungroup_1() {
+    ui_g_Ungroup_1.option.operate_type = 2;
+
+    ui_proc_string_frame(&ui_g_Ungroup_1);
+    SEND_MESSAGE((uint8_t *) &ui_g_Ungroup_1, sizeof(ui_g_Ungroup_1));
+}
+
+void _ui_remove_g_Ungroup_1() {
+    ui_g_Ungroup_1.option.operate_type = 3;
+
+    ui_proc_string_frame(&ui_g_Ungroup_1);
+    SEND_MESSAGE((uint8_t *) &ui_g_Ungroup_1, sizeof(ui_g_Ungroup_1));
+}
+ui_string_frame_t ui_g_Ungroup_2;
+ui_interface_string_t* ui_g_Ungroup_ShootText = &(ui_g_Ungroup_2.option);
+
+void _ui_init_g_Ungroup_2() {
+    ui_g_Ungroup_2.option.figure_name[0] = 0;
+    ui_g_Ungroup_2.option.figure_name[1] = 0;
+    ui_g_Ungroup_2.option.figure_name[2] = 5;
+    ui_g_Ungroup_2.option.operate_type = 1;
+
+    ui_g_Ungroup_ShootText->figure_type = 7;
+    ui_g_Ungroup_ShootText->operate_type = 1;
+    ui_g_Ungroup_ShootText->layer = 0;
+    ui_g_Ungroup_ShootText->color = 3;
+    ui_g_Ungroup_ShootText->start_x = 1525;
+    ui_g_Ungroup_ShootText->start_y = 610;
+    ui_g_Ungroup_ShootText->width = 2;
+    ui_g_Ungroup_ShootText->font_size = 20;
+    ui_g_Ungroup_ShootText->str_length = 5;
+    strcpy(ui_g_Ungroup_ShootText->string, "Shoot");
+
+
+    ui_proc_string_frame(&ui_g_Ungroup_2);
+    SEND_MESSAGE((uint8_t *) &ui_g_Ungroup_2, sizeof(ui_g_Ungroup_2));
+}
+
+void _ui_update_g_Ungroup_2() {
+    ui_g_Ungroup_2.option.operate_type = 2;
+
+    ui_proc_string_frame(&ui_g_Ungroup_2);
+    SEND_MESSAGE((uint8_t *) &ui_g_Ungroup_2, sizeof(ui_g_Ungroup_2));
+}
+
+void _ui_remove_g_Ungroup_2() {
+    ui_g_Ungroup_2.option.operate_type = 3;
+
+    ui_proc_string_frame(&ui_g_Ungroup_2);
+    SEND_MESSAGE((uint8_t *) &ui_g_Ungroup_2, sizeof(ui_g_Ungroup_2));
+}
+ui_string_frame_t ui_g_Ungroup_3;
+ui_interface_string_t* ui_g_Ungroup_AimText = &(ui_g_Ungroup_3.option);
+
+void _ui_init_g_Ungroup_3() {
+    ui_g_Ungroup_3.option.figure_name[0] = 0;
+    ui_g_Ungroup_3.option.figure_name[1] = 0;
+    ui_g_Ungroup_3.option.figure_name[2] = 6;
+    ui_g_Ungroup_3.option.operate_type = 1;
+
+    ui_g_Ungroup_AimText->figure_type = 7;
+    ui_g_Ungroup_AimText->operate_type = 1;
+    ui_g_Ungroup_AimText->layer = 0;
+    ui_g_Ungroup_AimText->color = 3;
+    ui_g_Ungroup_AimText->start_x = 1526;
+    ui_g_Ungroup_AimText->start_y = 555;
+    ui_g_Ungroup_AimText->width = 2;
+    ui_g_Ungroup_AimText->font_size = 20;
+    ui_g_Ungroup_AimText->str_length = 3;
+    strcpy(ui_g_Ungroup_AimText->string, "Aim");
+
+
+    ui_proc_string_frame(&ui_g_Ungroup_3);
+    SEND_MESSAGE((uint8_t *) &ui_g_Ungroup_3, sizeof(ui_g_Ungroup_3));
+}
+
+void _ui_update_g_Ungroup_3() {
+    ui_g_Ungroup_3.option.operate_type = 2;
+
+    ui_proc_string_frame(&ui_g_Ungroup_3);
+    SEND_MESSAGE((uint8_t *) &ui_g_Ungroup_3, sizeof(ui_g_Ungroup_3));
+}
+
+void _ui_remove_g_Ungroup_3() {
+    ui_g_Ungroup_3.option.operate_type = 3;
+
+    ui_proc_string_frame(&ui_g_Ungroup_3);
+    SEND_MESSAGE((uint8_t *) &ui_g_Ungroup_3, sizeof(ui_g_Ungroup_3));
+}
 
 void ui_init_g_Ungroup() {
     _ui_init_g_Ungroup_0();
+    _ui_init_g_Ungroup_1();
+    _ui_init_g_Ungroup_2();
+    _ui_init_g_Ungroup_3();
 }
 
 void ui_update_g_Ungroup() {
     _ui_update_g_Ungroup_0();
+    _ui_update_g_Ungroup_1();
+    _ui_update_g_Ungroup_2();
+    _ui_update_g_Ungroup_3();
 }
 
 void ui_remove_g_Ungroup() {
     _ui_remove_g_Ungroup_0();
+    _ui_remove_g_Ungroup_1();
+    _ui_remove_g_Ungroup_2();
+    _ui_remove_g_Ungroup_3();
 }
 

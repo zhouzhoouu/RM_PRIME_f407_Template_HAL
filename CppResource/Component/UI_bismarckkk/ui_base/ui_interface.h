@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include "ui_types.h"
 
-extern int ui_self_id;
+extern volatile int ui_self_id;
 
 void print_message(const uint8_t* message, int length);
 void uart_send(const uint8_t* message, int length);

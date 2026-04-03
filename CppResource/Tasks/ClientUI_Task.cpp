@@ -11,6 +11,8 @@ using namespace Device;
 
 void ClientUI_Task(void const * argument){
 
+    using namespace RefereeType;
+    using namespace RefereeType;
     Referee &hreferee = Referee::getInstance();
     auto &hVT03 = VT03::getInstance();
 
@@ -18,6 +20,9 @@ void ClientUI_Task(void const * argument){
     static bool last_V = false;
 
     while (1){
+
+        uint8_t rid = hreferee.getRefereeInfo<GameRobotState>().robot_id;
+        ui_self_id = rid;
 
         bool G = BITMASK(hVT03.getState()->key_code, 10);
         bool V = BITMASK(hVT03.getState()->key_code, 14);
