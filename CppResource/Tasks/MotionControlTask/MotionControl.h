@@ -24,21 +24,21 @@ namespace MotionParameter{
     static float constexpr CHASSIS_K_CHX = 7.5f;
     static float constexpr CHASSIS_K_CHY = 7.5f;
     static float constexpr CHASSIS_K_OMEGA = 2.5f;
-    static float constexpr CHASSIS_MAX_ACCEL = 800000.f;
-    static float constexpr CHASSIS_MAX_ALPHA = 800000.f;
+    static float constexpr CHASSIS_MAX_ACCEL = 450000.f;
+    static float constexpr CHASSIS_MAX_ALPHA = 600000.f;
 
     static float constexpr CHASSIS_FOLLOW_OMEGA = 1000.f;
     static float constexpr CHASSIS_FOLLOW_DES = 0.4; //rad
 
 
-    static float constexpr GIMBAL_YAW_KD = 0.72f;
+    static float constexpr GIMBAL_YAW_KD = 0.65f;
     static float constexpr GIMBAL_YAW_KP = 0.f;
 
     static float constexpr GIMBAL_PITCH_UPPER = 0.15f;
     static float constexpr GIMBAL_PITCH_LOWER = -0.5f;
-    static float constexpr GIMBAL_PITCH_KP = 7.f;
-    static float constexpr GIMBAL_PITCH_KI = 30.f;
-    static float constexpr GIMBAL_PITCH_KD = 0.6f;
+    static float constexpr GIMBAL_PITCH_KP = 5.f;
+    static float constexpr GIMBAL_PITCH_KI = 25.f;
+    static float constexpr GIMBAL_PITCH_KD = 0.7f;
     static float constexpr GIMBAL_PITCH_CMX = -.73f;
     static float constexpr GIMBAL_PITCH_CMY = -0.f;
 
@@ -53,7 +53,7 @@ namespace MotionParameter{
     static float constexpr GIMBAL_MAX_ALPHA = 12000.f;
 
     static float constexpr AUTOROTATE_MAX_OMEGA = 5000.f;
-    static float constexpr AUTOROTATE_ANGLE_BIAS = -1.4f;//-1.05f; //rad
+    static float constexpr AUTOROTATE_ANGLE_BIAS = -0.5f;//-1.05f; //rad
 
 }
 

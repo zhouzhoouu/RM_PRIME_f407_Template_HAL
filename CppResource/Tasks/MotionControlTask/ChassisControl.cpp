@@ -13,10 +13,10 @@ namespace ChassisControl{
     static bool isPowerOn = false;
 
     DeltaPID Speed_PID[4] = {
-            DeltaPID(2.0f, 0.03f, 0.05f, 0.0f, MAX_CUR, -MAX_CUR),
-            DeltaPID(2.0f, 0.03f, 0.05f, 0.0f, MAX_CUR, -MAX_CUR),
-            DeltaPID(2.0f, 0.03f, 0.05f, 0.0f, MAX_CUR, -MAX_CUR),
-            DeltaPID(2.0f, 0.03f, 0.05f, 0.0f, MAX_CUR, -MAX_CUR)
+            DeltaPID(4.0f, 0.2f, 0.08f, 0.0f, MAX_CUR, -MAX_CUR),
+            DeltaPID(4.0f, 0.2f, 0.08f, 0.0f, MAX_CUR, -MAX_CUR),
+            DeltaPID(4.0f, 0.2f, 0.08f, 0.0f, MAX_CUR, -MAX_CUR),
+            DeltaPID(4.0f, 0.2f, 0.08f, 0.0f, MAX_CUR, -MAX_CUR)
     };
 
     constexpr void MotionCalMecanumForward(const MoveState& target_motion, float* motor_v_target) {
